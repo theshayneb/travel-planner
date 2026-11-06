@@ -4,6 +4,7 @@ import { mergeSettings, PlannerSettings } from "./settings-model";
 import { PlannerSettingTab } from "./settings-tab";
 import { DATA_LANG, extract } from "./storage";
 import { ALL_TABS, parseTabs, TabId } from "./tabs";
+import { plannerBlockChanges } from "./template";
 import { TripVault } from "./vault";
 
 export const VIEW_TYPE = "hybrid-travel-planner-view";
@@ -65,6 +66,22 @@ export default class TravelPlannerPlugin extends Plugin implements PlannerHost {
 			name: "Insert planner block",
 			editorCallback: (editor: Editor) => {
 				editor.replaceSelection("```" + BLOCK_LANG + "\nconfirmed, ideas, outfits, past\n```\n");
+			},
+		});
+
+		this.addCommand({
+			id: "use-planner-in-note",
+			name: "Use the planner in this note's plans tabs",
+			editorCheckCallback: (checking, editor: Editor) => {
+				const changes = plannerBlockChanges(editor.getValue(), BLOCK_LANG);
+				if (!changes.length) return false;
+				if (checking) return true;
+				// One undoable edit; only the TripEvents / TripIdeas / TripEventsPast embed lines change.
+				editor.transaction({
+					changes: changes.map(c => ({ from: { line: c.line, ch: 0 }, to: { line: c.line, ch: editor.getLine(c.line).length }, text: c.text })),
+				});
+				new Notice(`Replaced ${changes.length} base ${changes.length === 1 ? "embed" : "embeds"} with the planner. Outfits is unchanged; undo to go back.`);
+				return true;
 			},
 		});
 

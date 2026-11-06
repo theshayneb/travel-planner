@@ -44,6 +44,7 @@ export class Component {
 	addChild<T extends Component>(c: T): T { this.children.push(c); c.load(); return c; }
 	removeChild<T extends Component>(c: T): T { c.unload(); return c; }
 	register(): void {}
+	registerDomEvent(el: HTMLElement, type: string, fn: (e: Event) => void): void { el.addEventListener(type, fn); }
 }
 export class MarkdownRenderChild extends Component { constructor(public containerEl: HTMLElement) { super(); } }
 export const MarkdownRenderer = {

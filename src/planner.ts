@@ -36,6 +36,7 @@ export class Planner extends Component {
 	private renderTimer: number | null = null;
 	private rendering = false;
 	private pending = false;
+	private listening = false;
 
 	constructor(
 		private readonly host: PlannerHost,
@@ -105,6 +106,12 @@ export class Planner extends Component {
 		const el = this.el;
 		el.empty();
 		el.addClass("htp-planner");
+		if (!this.listening) {
+			// Inside a callout in Live Preview, a mousedown would otherwise put the editor's cursor into the callout and
+			// show its source instead of letting the button work.
+			this.registerDomEvent(el, "mousedown", e => e.stopPropagation());
+			this.listening = true;
+		}
 		el.toggleClass("htp-planner--full", this.options.header);
 
 		if (this.options.header) this.drawHeader(el, tripStart, tripEnd);
@@ -136,7 +143,7 @@ export class Planner extends Component {
 				add.createSpan({ text: "Add activity" });
 				add.onClickEvent(() => this.add(undefined));
 			}
-			if (!this.options.header && tabs.length > 1) {
+			if (!this.options.header) {
 				const full = toolbar.createEl("button", { cls: "clickable-icon htp-expand", attr: { "aria-label": "Open full-screen planner" } });
 				setIcon(full, "maximize-2");
 				full.onClickEvent(() => this.host.openFullView(trip));

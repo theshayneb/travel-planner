@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.2.1
+
+- New command **Use the planner in this note's plans tabs**: in the Trip template (or any trip), replaces the
+  `TripEvents`, `TripIdeas` and `TripEventsPast` base embeds inside the Meta Bind tabs with planner blocks, keeping their
+  callout depth. The Outfits embed and all other lines stay as they are, and it's a single undoable edit.
+- Single-tab planner blocks have a full-screen button too.
+- Clicking planner buttons inside a callout in Live Preview no longer risks switching the callout to its source.
+
 ## 0.2.0
 
 First version published to GitHub. It builds on the 0.1.0 scaffold.

@@ -58,28 +58,40 @@ confirmed, ideas, outfits, past
 
 That shows all four tabs in one place.
 
-To keep your current Meta Bind tabs instead, replace only three lines inside the `[!tabbed-box]`. Each line becomes a
-three-line block with **the same `>` prefix** as the line it replaces. Leave the Outfits embed exactly as it is.
+### In the Trip template's Plans column (recommended)
 
-| Replace this line | With |
-|---|---|
-| `![[Embeds.base#TripEvents\|no-toolbar]]` | a `travel-planner` block containing `confirmed` |
-| `![[Embeds.base#TripIdeas\|no-toolbar]]` | a `travel-planner` block containing `ideas` |
-| `![[Embeds.base#TripEventsPast\|no-toolbar]]` | a `travel-planner` block containing `past` |
-
-For example, if the Confirmed embed sits at five levels of `>`:
+Keep the Meta Bind tab bar and the Outfits embed exactly as they are, and let the planner fill Confirmed, Ideas and Past.
+Open the note (your Trip template, or any existing trip) and run **Use the planner in this note's plans tabs**. It changes
+only these three lines, keeping their `>` prefix, and it's one undoable edit:
 
 ````markdown
-> > > > > ![[Embeds.base#TripEvents|no-toolbar]]
-````
-
-becomes
-
-````markdown
+> > > > [!tabbed-box]
+> > > > > [!div-m]
+> > > > >
 > > > > > ```travel-planner
 > > > > > confirmed
 > > > > > ```
+> > > >
+> > > > > [!div-m]
+> > > > >
+> > > > > ```travel-planner
+> > > > > ideas
+> > > > > ```
+> > > >
+> > > > > [!div-m]
+> > > > >
+> > > > > ![[Embeds.base#TripOutfits|no-toolbar]]
+> > > >
+> > > > > [!div-m]
+> > > > >
+> > > > > ```travel-planner
+> > > > > past
+> > > > > ```
 ````
+
+Each tab gets its own **Add activity** button and a full-screen button. Running the command on the template means new
+trips get the planner. Run it on existing trips one at a time when you want them to use it; trips you don't convert keep
+working with the old embeds.
 
 `Embeds.base` itself is never modified, and putting the old embeds back undoes the change.
 
