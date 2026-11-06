@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { categoryOf } from "../src/model";
-import { firstLinkTarget, isTrip, itemFromNote, noteKind, parseCoords, splitDateTime, yamlTags } from "../src/notes";
+import { displayName, firstLinkTarget, isTrip, itemFromNote, noteKind, parseCoords, splitDateTime, yamlTags } from "../src/notes";
 import { mapsUrl } from "../src/maps";
 import { DEFAULT_SETTINGS, mergeSettings } from "../src/settings-model";
 import { parseTabs } from "../src/tabs";
@@ -63,6 +63,27 @@ describe("reading an existing Place note", () => {
 		const custom = mergeSettings({ props: { date: "When" } });
 		expect(custom.props.endDate).toBe("End_Date");
 		expect(itemFromNote("p.md", "P", { When: "2026-01-02" }, "place", custom).date).toBe("2026-01-02");
+	});
+});
+
+describe("note names", () => {
+	it.each([
+		["TPA to LGA (2026-05-12)", "TPA to LGA"],
+		["No Doubt at Sphere (2026-05-16 20:00)", "No Doubt at Sphere"],
+		["Dinner (05-16-2026)", "Dinner"],
+		["Hamilton (May 16, 2026)", "Hamilton"],
+		["Hamilton (16 May 2026)", "Hamilton"],
+		["Marathon (2026)", "Marathon"],
+	])("drops the trailing date from %s", (name, shown) => {
+		expect(displayName(name)).toBe(shown);
+	});
+
+	it.each(["Sam's Town Mystic Falls Park", "Route (66)", "Café (downtown)", "(2026-05-12)", "Trip (2026-05-12) notes"])("keeps %s as it is", name => {
+		expect(displayName(name)).toBe(name);
+	});
+
+	it("shows existing notes with the shorter name", () => {
+		expect(itemFromNote("e.md", "TPA to LGA (2026-05-12)", { tags: ["event"] }, "event", s).name).toBe("TPA to LGA");
 	});
 });
 

@@ -81,6 +81,26 @@ export function descriptiveTags(fm: Frontmatter | undefined, s: PlannerSettings)
 	return yamlTags(fm).filter(t => !structural.has(t));
 }
 
+const MONTH = "(?:jan|feb|mar|apr|may|jun|jul|aug|sep|sept|oct|nov|dec)[a-z]*\\.?";
+const DATE_IN_PARENS = [
+	/^\d{4}-\d{1,2}-\d{1,2}(?:[ T]\d{1,2}:\d{2})?$/, // 2026-05-12
+	/^\d{1,2}[/.-]\d{1,2}(?:[/.-]\d{2,4})?$/, // 5/12/26, 05-12-2026, 5/12
+	new RegExp(`^${MONTH}\\s+\\d{1,2}(?:st|nd|rd|th)?(?:,?\\s+\\d{4})?$`, "i"), // May 12, 2026
+	new RegExp(`^\\d{1,2}\\s+${MONTH}(?:,?\\s+\\d{4})?$`, "i"), // 12 May 2026
+	/^\d{4}$/, // 2026
+];
+
+/**
+ * Drops a trailing date in parentheses from a note name: "TPA to LGA (2026-05-12)" → "TPA to LGA".
+ * The card already shows the date. Anything else in parentheses, e.g. "Route (66)", is kept.
+ */
+export function displayName(basename: string): string {
+	const m = /^(.*\S)\s*\(([^()]*)\)\s*$/.exec(basename);
+	if (!m) return basename;
+	const inner = m[2].trim();
+	return DATE_IN_PARENS.some(re => re.test(inner)) ? m[1] : basename;
+}
+
 /** Builds the card for an existing note. Its date/time come from the note's own `Date` unless a visit overrides them. */
 export function itemFromNote(path: string, basename: string, fm: Frontmatter, kind: Kind, s: PlannerSettings): DisplayItem {
 	const p = s.props;
@@ -96,7 +116,7 @@ export function itemFromNote(path: string, basename: string, fm: Frontmatter, ki
 		kind,
 		// The first tag that names a category (e.g. food among friends_family, food), else the first descriptive tag.
 		category: tags.find(isCategory) ?? tags[0] ?? kind,
-		name: basename,
+		name: displayName(basename),
 		date: start.date,
 		time: start.time,
 		endDate: end.date && end.date !== start.date ? end.date : undefined,

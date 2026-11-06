@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.2.6
+
+- Linked notes show without the date in parentheses at the end of their name: "JFK to RNO (2026-11-22)" shows as
+  "JFK to RNO", since the card already shows the date. Only what's displayed changes; notes aren't renamed. Other
+  parentheses, like "Route (66)", are kept.
+
 ## 0.2.5
 
 - Renamed to **Travel Planner**. The plugin ID stays `hybrid-travel-planner`, so the update installs over the
