@@ -101,14 +101,14 @@ only these three lines, keeping their `>` prefix, and it's one undoable edit:
 > > > > > ```
 ````
 
-Each tab gets a full-screen button. Running the command on the template means new
+Running the command on the template means new
 trips get the planner. Run it on existing trips one at a time when you want them to use it; trips you don't convert keep
 working with the old embeds.
 
 `Embeds.base` itself is never modified, and putting the old embeds back undoes the change.
 
-**Open full-screen planner for this trip** (command palette, or the expand button on the embedded planner) opens a larger
-view in its own tab, with its own **Add activity** button.
+**Open full-screen planner for this trip** (`hybrid-travel-planner:open-planner`) opens a larger view in its own tab.
+Like adding, it's a command, so it can sit on a Meta Bind button of your own. Each day's **+** adds to that day.
 
 ### An Add activity button where you want it
 

@@ -47,7 +47,6 @@ const host: PlannerHost = {
 	vault,
 	getSettings: () => DEFAULT_SETTINGS,
 	tabMemory: new Map(),
-	openFullView: () => {},
 };
 
 const params = new URLSearchParams(location.search);

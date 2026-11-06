@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.3.5
+
+- Removed the full-screen arrow button from planners in notes, and the **Add activity** button from the full-screen view.
+  Both are commands (`hybrid-travel-planner:open-planner`, `hybrid-travel-planner:add-activity`) for your own Meta Bind
+  buttons; **Add activity to this trip** also works while the full-screen view is open. Each day's **+** stays.
+
 ## 0.3.4
 
 - The full-screen planner always opens on **Confirmed**. Before, it could open on Past, because each single-tab block in

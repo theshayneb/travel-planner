@@ -22,7 +22,6 @@ export interface PlannerHost {
 	getSettings: () => PlannerSettings;
 	/** Remembers the open tab per Trip while Obsidian runs, so re-renders keep it. */
 	tabMemory: Map<string, TabId>;
-	openFullView: (trip: TFile) => void;
 }
 
 export interface PlannerOptions {
@@ -136,7 +135,6 @@ export class Planner extends Component {
 		if (!active || !tabs.includes(active)) active = tabs[0];
 
 		const bar = tabs.length > 1 ? el.createDiv({ cls: "htp-tabs", attr: { role: "tablist" } }) : null;
-		const toolbar = el.createDiv({ cls: "htp-toolbar" });
 		const body = el.createDiv({ cls: "htp-body" });
 
 		const counts: Record<TabId, number> = { confirmed: 0, ideas: 0, outfits: 0, past: 0 };
@@ -146,20 +144,6 @@ export class Planner extends Component {
 			this.current = tab;
 			bar?.querySelectorAll(".htp-tab").forEach(b => b.toggleClass("is-active", b.getAttr("data-tab") === tab));
 			body.empty();
-			toolbar.empty();
-			// In Trip notes, adding is the "Add activity to this trip" command (bind it to a Meta Bind button anywhere);
-			// the full-screen view keeps its own button.
-			if (this.options.header && tab !== "outfits" && !error) {
-				const add = toolbar.createEl("button", { cls: "htp-add mod-cta" });
-				setIcon(add.createSpan(), "plus");
-				add.createSpan({ text: "Add activity" });
-				add.onClickEvent(() => this.add(undefined));
-			}
-			if (!this.options.header) {
-				const full = toolbar.createEl("button", { cls: "clickable-icon htp-expand", attr: { "aria-label": "Open full-screen planner" } });
-				setIcon(full, "maximize-2");
-				full.onClickEvent(() => this.host.openFullView(trip));
-			}
 			if (tab === "confirmed") this.drawDays(body, items.filter(i => bucketOf(i.date, today) === "confirmed"), "Nothing scheduled from today on. Add an activity, or give an idea a date.");
 			if (tab === "past") this.drawDays(body, items.filter(i => bucketOf(i.date, today) === "past"), "Nothing in the past yet.");
 			if (tab === "ideas") this.drawIdeas(body, items.filter(i => !i.date));
