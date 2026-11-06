@@ -173,5 +173,7 @@ npm run shots   # screenshots of the planner in Chromium (needs Playwright)
 To release: bump `version` in `manifest.json` and `package.json`, add the version to `versions.json` and `CHANGELOG.md`, commit, then push a tag
 equal to the version with no `v` (`git tag 0.3.0 && git push origin 0.3.0`). The release workflow publishes `main.js`,
 `manifest.json` and `styles.css`; tags with a `-` (e.g. `0.3.0-beta.1`) become prereleases.
+Without pushing a tag, you can also publish from GitHub: **Actions → Release → Run workflow** releases the version in
+`manifest.json` and creates its tag.
 
 Design notes and constraints from the planning conversation: [docs/design.md](docs/design.md).
