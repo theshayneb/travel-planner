@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.8
+
+- The Add activity button sits at the top right, next to the full-screen button.
+
 ## 0.2.7
 
 - Smaller text on the cards: names and times one size down, details, notes and links one more, with smaller icons.
