@@ -101,14 +101,31 @@ only these three lines, keeping their `>` prefix, and it's one undoable edit:
 > > > > > ```
 ````
 
-Each tab gets its own **Add activity** button and a full-screen button. Running the command on the template means new
+Each tab gets a full-screen button. Running the command on the template means new
 trips get the planner. Run it on existing trips one at a time when you want them to use it; trips you don't convert keep
 working with the old embeds.
 
 `Embeds.base` itself is never modified, and putting the old embeds back undoes the change.
 
 **Open full-screen planner for this trip** (command palette, or the expand button on the embedded planner) opens a larger
-view in its own tab. **Add activity to this trip** works from the command palette too.
+view in its own tab, with its own **Add activity** button.
+
+### An Add activity button where you want it
+
+In Trip notes, adding is the command **Travel Planner: Add activity to this trip**
+(`hybrid-travel-planner:add-activity`), so you can put a Meta Bind button anywhere in the note or the template:
+
+````markdown
+```meta-bind-button
+label: Add activity
+style: primary
+actions:
+  - type: command
+    command: hybrid-travel-planner:add-activity
+```
+````
+
+It opens the add form for the trip note it's in. It also works from the command palette and can have a hotkey.
 
 ## Where the data lives
 

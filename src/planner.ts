@@ -141,7 +141,9 @@ export class Planner extends Component {
 			bar?.querySelectorAll(".htp-tab").forEach(b => b.toggleClass("is-active", b.getAttr("data-tab") === tab));
 			body.empty();
 			toolbar.empty();
-			if (tab !== "outfits" && !error) {
+			// In Trip notes, adding is the "Add activity to this trip" command (bind it to a Meta Bind button anywhere);
+			// the full-screen view keeps its own button.
+			if (this.options.header && tab !== "outfits" && !error) {
 				const add = toolbar.createEl("button", { cls: "htp-add mod-cta" });
 				setIcon(add.createSpan(), "plus");
 				add.createSpan({ text: "Add activity" });
@@ -331,6 +333,10 @@ export class Planner extends Component {
 	}
 
 	add(defaultDate: string | undefined): void {
+		// Works before the planner has drawn (e.g. from the command), so read the trip's days here.
+		const s = this.host.getSettings();
+		const fm = this.host.vault.frontmatter(this.trip) ?? {};
+		this.days = tripDays(splitDateTime(fm[s.props.date]).date, splitDateTime(fm[s.props.endDate]).date);
 		let notes: NoteMatch[] | null = null;
 		new ActivityModal(this.app, {
 			defaultDate,

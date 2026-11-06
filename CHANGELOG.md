@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.3.3
+
+- The planner in Trip notes no longer has its own **Add activity** button. Use the command
+  **Add activity to this trip** (`hybrid-travel-planner:add-activity`), for example from a Meta Bind button placed
+  anywhere; the README has a ready-made one. The full-screen view keeps its button, and each day's **+** stays.
+- The command opens the full form (trip days, note search, look up) even before the planner has been drawn.
+
 ## 0.3.2
 
 - Card buttons (open note, schedule, edit, convert, delete) sit in the card's top-right corner. Cards without Map or
