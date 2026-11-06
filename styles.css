@@ -156,7 +156,8 @@
 }
 .htp-family-food { --htp-family: var(--color-orange); }
 .htp-family-sight { --htp-family: var(--color-green); }
-.htp-family-event { --htp-family: var(--color-purple); }
+/* Events and shows use the theme's accent colour. */
+.htp-family-event { --htp-family: var(--interactive-accent); }
 .htp-family-stay { --htp-family: var(--color-blue); }
 .htp-family-transport { --htp-family: var(--color-cyan); }
 .htp-family-other { --htp-family: var(--color-base-60, var(--text-muted)); }

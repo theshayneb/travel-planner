@@ -34,7 +34,7 @@ a standalone note later.
   changed, so a failure never loses the entry.
 - **Map, menu, website and ticket links** on each card. Maps can open in Google Maps, Apple Maps or the device's maps app
   (Android).
-- **Bookings stand out.** Shows, events, flights and hotels get a filled card. Meals are orange, sights green, events purple,
+- **Bookings stand out.** Shows, events, flights and hotels get a filled card. Meals are orange, sights green, events your accent colour,
   stays blue, transport cyan, all from your theme's colours.
 
 ## Install (BRAT)

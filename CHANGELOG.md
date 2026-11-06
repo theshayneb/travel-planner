@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.3
+
+- Events and shows use your Obsidian accent colour instead of purple.
+
 ## 0.2.2
 
 - Confirmed and Past only list days that have something planned.
