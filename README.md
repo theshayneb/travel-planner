@@ -17,7 +17,7 @@ a standalone note later.
 
 - **Four tabs, in your existing order:** Confirmed · Ideas · Outfits · Past.
   - **Confirmed:** activities dated today or later, grouped by day. Today's activities stay here all day, even after their time
-    has passed. Empty days of the trip are listed too, each with a **+** button.
+    has passed. Only days with something planned are listed; each has a **+** button.
   - **Ideas:** activities with no date, grouped by category.
   - **Outfits:** your existing `Embeds.base#TripOutfits` view, rendered unchanged. The plugin does not recreate any outfit logic.
   - **Past:** activities dated before today.

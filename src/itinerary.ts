@@ -68,9 +68,8 @@ export interface DayGroup {
 }
 
 /** Groups dated entries by day, earliest first; timed entries by time, untimed ones in their saved order. */
-export function groupByDay(items: DisplayItem[], extraDays: string[] = []): DayGroup[] {
+export function groupByDay(items: DisplayItem[]): DayGroup[] {
 	const days = new Map<string, DayGroup>();
-	for (const d of extraDays) days.set(d, { date: d, timed: [], untimed: [] });
 	for (const item of items) {
 		if (!item.date) continue;
 		const day = days.get(item.date) ?? { date: item.date, timed: [], untimed: [] };
@@ -97,25 +96,4 @@ export function groupIdeas(items: DisplayItem[]): IdeaGroup[] {
 	return [...groups.entries()]
 		.sort(([a], [b]) => a.localeCompare(b))
 		.map(([label, list]) => ({ label, items: list.sort((a, b) => a.name.localeCompare(b.name)) }));
-}
-
-/** Every calendar day from `from` to `to` inclusive (YYYY-MM-DD), at most `limit` days. */
-export function daysBetween(from: string | undefined, to: string | undefined, limit = 60): string[] {
-	if (!from || !/^\d{4}-\d{2}-\d{2}$/.test(from)) return [];
-	const end = to && /^\d{4}-\d{2}-\d{2}$/.test(to) ? to : from;
-	const out: string[] = [];
-	const [y, m, d] = from.split("-").map(Number);
-	const cursor = new Date(y, m - 1, d);
-	while (out.length < limit) {
-		const iso = localDate(cursor);
-		if (iso > end) break;
-		out.push(iso);
-		cursor.setDate(cursor.getDate() + 1);
-	}
-	return out;
-}
-
-/** The Trip days still to come (today onwards), so empty upcoming days can be planned too. */
-export function upcomingTripDays(start: string | undefined, end: string | undefined, today: string): string[] {
-	return daysBetween(start, end).filter(d => d >= today);
 }

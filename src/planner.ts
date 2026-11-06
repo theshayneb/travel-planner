@@ -1,6 +1,6 @@
 /** The planner UI. Used by the `travel-planner` block inside Trip notes and by the full-screen view. */
 import { App, Component, MarkdownRenderer, moment, Notice, setIcon, TFile } from "obsidian";
-import { bucketOf, groupByDay, groupIdeas, localDate, mergeItems, upcomingTripDays } from "./itinerary";
+import { bucketOf, groupByDay, groupIdeas, localDate, mergeItems } from "./itinerary";
 import { mapsUrl } from "./maps";
 import { categoryOf, DisplayItem, newId, TravelData, TravelItem } from "./model";
 import { ActivityModal } from "./modals/activity";
@@ -148,8 +148,8 @@ export class Planner extends Component {
 				setIcon(full, "maximize-2");
 				full.onClickEvent(() => this.host.openFullView(trip));
 			}
-			if (tab === "confirmed") this.drawDays(body, items.filter(i => bucketOf(i.date, today) === "confirmed"), upcomingTripDays(tripStart, tripEnd, today), "Nothing scheduled from today on. Add an activity, or give an idea a date.");
-			if (tab === "past") this.drawDays(body, items.filter(i => bucketOf(i.date, today) === "past"), [], "Nothing in the past yet.");
+			if (tab === "confirmed") this.drawDays(body, items.filter(i => bucketOf(i.date, today) === "confirmed"), "Nothing scheduled from today on. Add an activity, or give an idea a date.");
+			if (tab === "past") this.drawDays(body, items.filter(i => bucketOf(i.date, today) === "past"), "Nothing in the past yet.");
 			if (tab === "ideas") this.drawIdeas(body, items.filter(i => !i.date));
 			if (tab === "outfits") this.drawOutfits(body);
 		};
@@ -182,8 +182,8 @@ export class Planner extends Component {
 		open.onClickEvent(() => void this.app.workspace.getLeaf(false).openFile(this.trip));
 	}
 
-	private drawDays(body: HTMLElement, items: DisplayItem[], emptyDays: string[], emptyText: string): void {
-		const groups = groupByDay(items, emptyDays);
+	private drawDays(body: HTMLElement, items: DisplayItem[], emptyText: string): void {
+		const groups = groupByDay(items);
 		if (!groups.length) {
 			body.createDiv({ cls: "htp-empty", text: emptyText });
 			return;
@@ -199,7 +199,6 @@ export class Planner extends Component {
 			const add = head.createEl("button", { cls: "clickable-icon htp-day-add", attr: { "aria-label": `Add to ${m.format("ddd, MMM D")}` } });
 			setIcon(add, "plus");
 			add.onClickEvent(() => this.add(g.date));
-			if (!g.timed.length && !g.untimed.length) day.createDiv({ cls: "htp-day-empty", text: "Nothing planned yet." });
 			for (const item of g.timed) this.drawCard(day, item);
 			if (g.untimed.length) {
 				if (g.timed.length) day.createDiv({ cls: "htp-anytime", text: "Any time" });
@@ -250,10 +249,6 @@ export class Planner extends Component {
 		if (item.time) setIcon(title.createSpan({ cls: "htp-icon" }), cat.icon);
 		title.createSpan({ cls: "htp-name", text: item.name });
 		title.createSpan({ cls: "htp-chip", text: cat.label });
-		if (item.origin !== "inline") {
-			const badge = title.createSpan({ cls: "htp-note-badge", attr: { "aria-label": item.origin === "legacy" ? "Linked note" : "Visit to a note" } });
-			setIcon(badge, "file-text");
-		}
 		if (item.rating) title.createSpan({ cls: "htp-rating", text: item.rating });
 
 		if (item.missing) main.createDiv({ cls: "htp-warning", text: `The note ${item.path ?? ""} was not found. It may have been renamed outside Obsidian or deleted.` });

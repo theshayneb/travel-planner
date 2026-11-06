@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.2.2
+
+- Confirmed and Past only list days that have something planned.
+- Smaller weekday and date headings.
+- Removed the extra note icon next to the category label; the open-note button stays.
+
 ## 0.2.1
 
 - New command **Use the planner in this note's plans tabs**: in the Trip template (or any trip), replaces the

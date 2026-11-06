@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { bucketOf, daysBetween, groupByDay, groupIdeas, localDate, mergeItems, upcomingTripDays } from "../src/itinerary";
+import { bucketOf, groupByDay, groupIdeas, localDate, mergeItems } from "../src/itinerary";
 import { DisplayItem, TravelItem } from "../src/model";
 
 const inline = (over: Partial<TravelItem>): TravelItem => ({ id: over.name ?? "x", source: "inline", kind: "place", category: "restaurant", name: "x", ...over });
@@ -64,15 +64,9 @@ describe("grouping", () => {
 		expect(days[1].untimed.map(i => i.name)).toEqual(["Untimed B", "Untimed A"]);
 	});
 
-	it("lists empty upcoming trip days so they can be planned", () => {
-		expect(upcomingTripDays("2026-05-12", "2026-05-15", "2026-05-14")).toEqual(["2026-05-14", "2026-05-15"]);
-		expect(groupByDay([], ["2026-05-14"])).toEqual([{ date: "2026-05-14", timed: [], untimed: [] }]);
-	});
-
-	it("crosses month ends and caps long ranges", () => {
-		expect(daysBetween("2026-05-30", "2026-06-02")).toEqual(["2026-05-30", "2026-05-31", "2026-06-01", "2026-06-02"]);
-		expect(daysBetween("2026-01-01", "2027-01-01")).toHaveLength(60);
-		expect(daysBetween(undefined, "2026-01-01")).toEqual([]);
+	it("only lists days that have something planned", () => {
+		const days = groupByDay(mergeItems([inline({ name: "A", date: "2026-05-12" }), inline({ name: "B", date: "2026-05-15" }), inline({ name: "Idea" })], [], () => null));
+		expect(days.map(d => d.date)).toEqual(["2026-05-12", "2026-05-15"]);
 	});
 
 	it("groups ideas by category", () => {
