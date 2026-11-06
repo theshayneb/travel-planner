@@ -145,6 +145,7 @@
 .htp-card {
 	--htp-family: var(--color-base-50, var(--text-muted));
 	position: relative;
+	font-size: var(--font-ui-small);
 	display: flex;
 	gap: var(--size-4-3);
 	padding: var(--size-4-2) var(--size-4-3);
@@ -213,8 +214,8 @@
 }
 .htp-icon svg,
 .htp-when-icon svg {
-	width: var(--icon-m);
-	height: var(--icon-m);
+	width: var(--icon-s);
+	height: var(--icon-s);
 }
 .htp-name {
 	font-weight: var(--font-semibold);
@@ -232,7 +233,7 @@
 	align-items: flex-start;
 	gap: var(--size-4-1);
 	color: var(--text-muted);
-	font-size: var(--font-ui-small);
+	font-size: var(--font-ui-smaller);
 	margin-top: var(--size-2-2);
 	white-space: pre-line;
 	overflow-wrap: anywhere;
@@ -247,7 +248,7 @@
 	height: var(--icon-xs);
 }
 .htp-notes {
-	font-size: var(--font-ui-small);
+	font-size: var(--font-ui-smaller);
 	margin-top: var(--size-4-1);
 	white-space: pre-line;
 	overflow-wrap: anywhere;
@@ -273,7 +274,7 @@
 	display: inline-flex;
 	align-items: center;
 	gap: var(--size-2-1);
-	font-size: var(--font-ui-small);
+	font-size: var(--font-ui-smaller);
 	text-decoration: none;
 	background-image: none;
 	padding-right: 0;

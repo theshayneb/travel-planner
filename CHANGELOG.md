@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.7
+
+- Smaller text on the cards: names and times one size down, details, notes and links one more, with smaller icons.
+
 ## 0.2.6
 
 - Linked notes show without the date in parentheses at the end of their name: "JFK to RNO (2026-11-22)" shows as
