@@ -97,8 +97,9 @@ export default class TravelPlannerPlugin extends Plugin implements PlannerHost {
 		this.registerEvent(this.app.vault.on("rename", (file, oldPath) => {
 			if (!(file instanceof TFile)) return;
 			for (const p of this.planners) if (p.shown.has(oldPath)) p.refreshSoon();
-			const remembered = this.tabMemory.get(oldPath);
-			if (remembered) this.tabMemory.set(file.path, remembered);
+			for (const [key, tab] of [...this.tabMemory]) {
+				if (key.startsWith(`${oldPath}|`)) this.tabMemory.set(`${file.path}${key.slice(oldPath.length)}`, tab);
+			}
 			this.vault.onRename(file, oldPath).catch((e: unknown) => {
 				new Notice(`Travel planner could not update a renamed note in a trip: ${e instanceof Error ? e.message : String(e)}`, 8000);
 			});

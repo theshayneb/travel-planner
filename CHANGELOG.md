@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.3.4
+
+- The full-screen planner always opens on **Confirmed**. Before, it could open on Past, because each single-tab block in
+  the Trip note recorded its tab and the last one drawn won.
+- Only a tab you click is remembered, and only for that planner block.
+
 ## 0.3.3
 
 - The planner in Trip notes no longer has its own **Add activity** button. Use the command

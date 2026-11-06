@@ -37,6 +37,8 @@ export class Planner extends Component {
 	private renderTimer: number | null = null;
 	private rendering = false;
 	private pending = false;
+	/** Tab currently shown by this planner. */
+	private current: TabId | undefined;
 	/** The trip's days, for the add form. */
 	private days: string[] = [];
 	private listening = false;
@@ -126,7 +128,11 @@ export class Planner extends Component {
 		}
 
 		const tabs = this.options.tabs.filter(t => t !== "outfits" || s.showOutfitsTab);
-		let active = this.host.tabMemory.get(trip.path);
+		// The tab this planner shows: the one last clicked in it; for a multi-tab block in a note, the one last clicked in
+		// that block (it is redrawn whenever the note re-renders); otherwise the first tab. The full-screen view always
+		// starts on Confirmed.
+		const memoryKey = `${trip.path}|${tabs.join(",")}`;
+		let active = this.current ?? (this.options.header ? undefined : this.host.tabMemory.get(memoryKey));
 		if (!active || !tabs.includes(active)) active = tabs[0];
 
 		const bar = tabs.length > 1 ? el.createDiv({ cls: "htp-tabs", attr: { role: "tablist" } }) : null;
@@ -137,7 +143,7 @@ export class Planner extends Component {
 		for (const i of items) counts[bucketOf(i.date, today)]++;
 
 		const show = (tab: TabId) => {
-			this.host.tabMemory.set(trip.path, tab);
+			this.current = tab;
 			bar?.querySelectorAll(".htp-tab").forEach(b => b.toggleClass("is-active", b.getAttr("data-tab") === tab));
 			body.empty();
 			toolbar.empty();
@@ -166,7 +172,10 @@ export class Planner extends Component {
 				setIcon(b.createSpan({ cls: "htp-tab-icon" }), TAB_ICONS[tab]);
 				b.createSpan({ text: TAB_LABELS[tab] });
 				if (tab !== "outfits" && counts[tab]) b.createSpan({ cls: "htp-count", text: String(counts[tab]) });
-				b.onClickEvent(() => show(tab));
+				b.onClickEvent(() => {
+					if (!this.options.header) this.host.tabMemory.set(memoryKey, tab);
+					show(tab);
+				});
 			}
 		}
 		show(active);

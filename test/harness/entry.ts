@@ -52,10 +52,10 @@ const host: PlannerHost = {
 
 const params = new URLSearchParams(location.search);
 const tab = (params.get("tab") ?? "confirmed") as TabId;
-host.tabMemory.set(trip.path, tab);
 const root = document.getElementById("root") as HTMLElement;
 const full = params.get("full") === "1";
 const tabs = (params.get("tabs")?.split(",") ?? ["confirmed", "ideas", "outfits", "past"]) as TabId[];
+host.tabMemory.set(`${trip.path}|${tabs.join(",")}`, tab);
 const planner = new Planner(host, root.createDiv({ cls: params.get("callout") ? "harness-callout" : "" }), trip, { tabs, header: full });
 planner.load();
 void planner.render().then(async () => {
