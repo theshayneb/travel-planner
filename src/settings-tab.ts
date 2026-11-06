@@ -9,6 +9,7 @@ const PROPERTY_LABELS: [keyof PropertyNames, string, string][] = [
 	["address", "Address", ""],
 	["coords", "Coordinates", "Latitude and longitude, used for the map link."],
 	["website", "Website", ""],
+	["phone", "Phone", ""],
 	["notes", "Notes", ""],
 	["image", "Image", "Shown as the card thumbnail."],
 	["rating", "Rating", ""],
@@ -53,6 +54,13 @@ export class PlannerSettingTab extends PluginSettingTab {
 			.setValue(s.mapsProvider)
 			.onChange(v => {
 				s.mapsProvider = v as MapsProvider;
+				save();
+			}));
+		new Setting(el)
+			.setName("Look up places online")
+			.setDesc("Show a look up button in the add form. It searches an online map only when you tap it, and fills nothing until you confirm the right place.")
+			.addToggle(t => t.setValue(s.lookupEnabled).onChange(v => {
+				s.lookupEnabled = v;
 				save();
 			}));
 		new Setting(el).setName("Outfits tab").setDesc("Show the outfits tab, powered by your existing base.").addToggle(t => t.setValue(s.showOutfitsTab).onChange(v => {

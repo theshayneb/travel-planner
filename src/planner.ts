@@ -1,6 +1,7 @@
 /** The planner UI. Used by the `travel-planner` block inside Trip notes and by the full-screen view. */
-import { App, Component, MarkdownRenderer, moment, Notice, setIcon, TFile } from "obsidian";
+import { App, Component, MarkdownRenderer, moment, Notice, requestUrl, setIcon, TFile } from "obsidian";
 import { bucketOf, groupByDay, groupIdeas, localDate, mergeItems, tripDays } from "./itinerary";
+import { LookupResult, lookupUrl, parseResults } from "./lookup";
 import { mapsUrl } from "./maps";
 import { categoryOf, DisplayItem, newId, TravelData, TravelItem } from "./model";
 import { ActivityModal } from "./modals/activity";
@@ -279,6 +280,7 @@ export class Planner extends Component {
 		if (map && (item.address || item.coords)) this.link(actions, "map", "Map", map);
 		if (item.menu) this.link(actions, "book-open", "Menu", item.menu);
 		if (item.website) this.link(actions, "globe", "Website", item.website);
+		if (item.phone) this.link(actions, "phone", "Call", `tel:${item.phone.replace(/[^\d+]/g, "")}`);
 		if (item.tickets && /^https?:/i.test(item.tickets)) this.link(actions, "ticket", "Tickets", item.tickets);
 
 		const tools = actions.createDiv({ cls: "htp-tools" });
@@ -329,6 +331,7 @@ export class Planner extends Component {
 		new ActivityModal(this.app, {
 			defaultDate,
 			tripDays: this.days,
+			lookup: this.lookup(),
 			findNotes: q => matchNotes(q, (notes ??= this.host.vault.noteMatches())),
 			onSubmit: item => this.write(d => {
 				if (item.source === "note" && d.items.some(i => i.source === "note" && i.path === item.path && (i.date ?? "") === (item.date ?? ""))) {
@@ -348,6 +351,21 @@ export class Planner extends Component {
 		new ActivityModal(this.app, { item: visit, tripDays: this.days, onSubmit: v => this.write(d => addItem(d, v)) }).open();
 	}
 
+	/** OpenStreetMap search for the add form, unless turned off in settings. One request per tap. */
+	private lookup(): ((name: string, address: string) => Promise<LookupResult[]>) | undefined {
+		if (!this.host.getSettings().lookupEnabled) return undefined;
+		return async (name, address) => {
+			const response = await requestUrl({
+				url: lookupUrl(name, address),
+				headers: {
+					"User-Agent": "Obsidian-Travel-Planner/1.0 (https://github.com/theshayneb/travel-planner)",
+					"Accept-Language": moment.locale() || "en",
+				},
+			});
+			return parseResults(response.json);
+		};
+	}
+
 	private async stored(id: string): Promise<TravelItem | undefined> {
 		return (await this.host.vault.read(this.trip)).items.find(i => i.id === id);
 	}
@@ -355,7 +373,12 @@ export class Planner extends Component {
 	private async edit(id: string): Promise<void> {
 		const item = await this.stored(id);
 		if (!item) return void new Notice("That entry changed on another device. The planner has been refreshed.");
-		new ActivityModal(this.app, { item, tripDays: this.days, onSubmit: next => this.write(d => replaceItem(d, id, next)) }).open();
+		new ActivityModal(this.app, {
+			item,
+			tripDays: this.days,
+			lookup: item.source === "inline" ? this.lookup() : undefined,
+			onSubmit: next => this.write(d => replaceItem(d, id, next)),
+		}).open();
 	}
 
 	private async remove(item: DisplayItem): Promise<void> {

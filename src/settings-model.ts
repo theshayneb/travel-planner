@@ -9,6 +9,7 @@ export interface PropertyNames {
 	address: string;
 	coords: string;
 	website: string;
+	phone: string;
 	notes: string;
 	image: string;
 	rating: string;
@@ -29,6 +30,8 @@ export interface PlannerSettings {
 	newNoteTemplate: string;
 	outfitsEmbed: string;
 	showOutfitsTab: boolean;
+	/** Show the "Look up" button (OpenStreetMap) in the add form. */
+	lookupEnabled: boolean;
 }
 
 export const DEFAULT_SETTINGS: PlannerSettings = {
@@ -45,6 +48,7 @@ export const DEFAULT_SETTINGS: PlannerSettings = {
 		address: "Address",
 		coords: "Geolink",
 		website: "Link",
+		phone: "Phone",
 		notes: "Notes",
 		image: "Image",
 		rating: "Rating",
@@ -56,6 +60,7 @@ export const DEFAULT_SETTINGS: PlannerSettings = {
 	newNoteTemplate: "",
 	outfitsEmbed: "![[Embeds.base#TripOutfits|no-toolbar]]",
 	showOutfitsTab: true,
+	lookupEnabled: true,
 };
 
 /** Merges saved settings over the defaults, keeping nested property names complete after upgrades. */

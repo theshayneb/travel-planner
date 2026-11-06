@@ -148,7 +148,7 @@ export class TripVault {
 				if (endDay) fm[p.endDate] = item.endTime ? `${endDay}T${item.endTime}:00` : endDay;
 			}
 			const copy: [string, string | undefined][] = [
-				[p.address, item.address], [p.coords, item.coords], [p.website, item.website], [p.menu, item.menu],
+				[p.address, item.address], [p.coords, item.coords], [p.website, item.website], [p.phone, item.phone], [p.menu, item.menu],
 				[p.hours, item.hours], [p.notes, item.notes],
 			];
 			for (const [key, value] of copy) if (value && key) fm[key] = value;

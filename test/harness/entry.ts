@@ -58,13 +58,18 @@ const full = params.get("full") === "1";
 const tabs = (params.get("tabs")?.split(",") ?? ["confirmed", "ideas", "outfits", "past"]) as TabId[];
 const planner = new Planner(host, root.createDiv({ cls: params.get("callout") ? "harness-callout" : "" }), trip, { tabs, header: full });
 planner.load();
-void planner.render().then(() => {
+void planner.render().then(async () => {
 	if (params.get("modal")) planner.add(day(1));
 	const typed = params.get("type");
 	if (typed) {
 		const input = document.querySelector<HTMLInputElement>(".htp-name-input");
 		if (input) { input.value = typed; input.dispatchEvent(new Event("input")); }
 		if (params.get("pick")) document.querySelector<HTMLElement>(".suggestion-item")?.click();
+		if (params.get("lookup")) {
+			document.querySelector(".suggestion-container")?.remove();
+			[...document.querySelectorAll<HTMLButtonElement>(".modal button")].find(b => b.textContent === "Look up")?.click();
+			await new Promise(r => setTimeout(r, 50));
+		}
 	}
 	document.body.setAttribute("data-ready", "1");
 });

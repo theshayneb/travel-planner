@@ -1,5 +1,6 @@
 import { AbstractInputSuggest, App, ButtonComponent, Modal, moment, Notice, setIcon, Setting } from "obsidian";
 import { CATEGORIES, categoryOf, ExtraField, newId, TravelItem } from "../model";
+import { applyPlan, fillPlan, LookupResult } from "../lookup";
 import { NoteMatch } from "../search";
 
 export interface ActivityModalOptions {
@@ -11,8 +12,16 @@ export interface ActivityModalOptions {
 	tripDays?: string[];
 	/** Searches the vault's Place/Event notes as the name is typed (adding only). */
 	findNotes?: (query: string) => NoteMatch[];
+	/** Searches OpenStreetMap for the typed place (only when "Look up" is tapped). */
+	lookup?: (name: string, address: string) => Promise<LookupResult[]>;
 	onSubmit: (item: TravelItem) => Promise<void>;
 }
+
+type LookupState =
+	| { status: "idle" }
+	| { status: "loading" }
+	| { status: "message"; text: string }
+	| { status: "results"; results: LookupResult[] };
 
 const FIELD_LABELS: Record<ExtraField, { name: string; placeholder?: string; type?: string; area?: boolean }> = {
 	menu: { name: "Menu", placeholder: "https://…", type: "url" },
@@ -78,6 +87,7 @@ export class ActivityModal extends Modal {
 	/** The inline entry being typed before a note was picked, so "Change" can go back to it. */
 	private inlineDraft: TravelItem | null = null;
 	private showOtherDate = false;
+	private lookupState: LookupState = { status: "idle" };
 
 	constructor(app: App, private readonly options: ActivityModalOptions) {
 		super(app);
@@ -154,6 +164,13 @@ export class ActivityModal extends Modal {
 				}
 				window.setTimeout(() => t.inputEl.focus(), 0);
 			});
+			if (this.options.lookup) {
+				nameRow.addButton(b => b
+					.setButtonText(this.lookupState.status === "loading" ? "Looking up…" : "Look up")
+					.setDisabled(this.lookupState.status === "loading")
+					.onClick(() => void this.runLookup()));
+			}
+			this.lookupPanel(el);
 		}
 
 		this.dayRow(el);
@@ -165,6 +182,7 @@ export class ActivityModal extends Modal {
 			this.textField(el, "address", "Address", "Street, city");
 			this.textField(el, "coords", "Coordinates", "36.1129, -115.0622");
 			this.textField(el, "website", "Website", "https://…", "url");
+			this.textField(el, "phone", "Phone", "+1 702 555 0100", "tel");
 		}
 
 		new Setting(el).setName(this.isVisit ? "Visit notes" : "Notes").addTextArea(t => {
@@ -176,6 +194,78 @@ export class ActivityModal extends Modal {
 		buttons.addButton(b => b.setButtonText("Save").setCta().onClick(() => void this.save(b, false)));
 		if (!this.isVisit) buttons.addButton(b => b.setButtonText("Save to ideas").onClick(() => void this.save(b, true)));
 		buttons.addButton(b => b.setButtonText("Cancel").onClick(() => this.close()));
+	}
+
+	private async runLookup(): Promise<void> {
+		const lookup = this.options.lookup;
+		const name = this.draft.name.trim();
+		if (!lookup) return;
+		if (!name) {
+			new Notice("Type a name to look up first.");
+			return;
+		}
+		this.lookupState = { status: "loading" };
+		this.render();
+		try {
+			const results = await lookup(name, this.draft.address ?? "");
+			this.lookupState = results.length
+				? { status: "results", results }
+				: { status: "message", text: `Nothing found for “${name}”. Try adding the city to the name or the address.` };
+		} catch (e) {
+			this.lookupState = { status: "message", text: `Look up failed (${e instanceof Error ? e.message : String(e)}). Check the connection and try again.` };
+		}
+		this.render();
+	}
+
+	/** Look-up results, each showing exactly what it would fill in, to confirm (yes) or dismiss (no). */
+	private lookupPanel(el: HTMLElement): void {
+		const state = this.lookupState;
+		if (state.status === "idle" || state.status === "loading") return;
+		const panel = el.createDiv({ cls: "htp-lookup" });
+		const dismiss = () => {
+			this.lookupState = { status: "idle" };
+			this.render();
+		};
+		if (state.status === "message") {
+			panel.createDiv({ cls: "htp-lookup-message", text: state.text });
+			panel.createEl("button", { text: "OK" }).onClickEvent(dismiss);
+			return;
+		}
+		panel.createDiv({
+			cls: "htp-lookup-head",
+			text: state.results.length === 1 ? "Is this the right place?" : `Found ${state.results.length} places. Is one of them right?`,
+		});
+		const fields = categoryOf(this.draft.category, this.draft.kind).fields;
+		for (const result of state.results) {
+			const plan = fillPlan(this.draft, result, fields);
+			const card = panel.createDiv({ cls: "htp-lookup-result" });
+			const title = card.createDiv({ cls: "htp-lookup-title" });
+			title.createSpan({ cls: "htp-lookup-name", text: result.name });
+			title.createSpan({ cls: "htp-lookup-type", text: result.type });
+			if (result.address && !plan.some(l => l.key === "address")) card.createDiv({ cls: "htp-lookup-address", text: result.address });
+			if (plan.length) {
+				const list = card.createDiv({ cls: "htp-lookup-fill" });
+				list.createDiv({ cls: "htp-lookup-fill-head", text: "Would fill in:" });
+				for (const line of plan) {
+					const row = list.createDiv({ cls: "htp-lookup-line" });
+					row.createSpan({ cls: "htp-lookup-label", text: line.label });
+					row.createSpan({ text: line.value });
+				}
+			} else {
+				card.createDiv({ cls: "htp-lookup-fill-head", text: "Nothing new to fill in: those fields are already filled or OpenStreetMap has none." });
+			}
+			const yes = card.createEl("button", { cls: "mod-cta", text: "Yes, use this" });
+			yes.disabled = plan.length === 0;
+			yes.onClickEvent(() => {
+				this.draft = applyPlan(this.draft, plan);
+				this.lookupState = { status: "idle" };
+				this.render();
+				new Notice(`Filled in ${plan.map(l => l.label.toLowerCase()).join(", ")}. Check them before saving.`);
+			});
+		}
+		const no = panel.createEl("button", { cls: "htp-lookup-no", text: state.results.length === 1 ? "No, that's not it" : "No, none of these" });
+		no.onClickEvent(dismiss);
+		panel.createDiv({ cls: "htp-lookup-credit", text: "Data © OpenStreetMap contributors" });
 	}
 
 	private pickSuggestion(s: Suggestion, input: HTMLInputElement): void {

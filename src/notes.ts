@@ -124,6 +124,7 @@ export function itemFromNote(path: string, basename: string, fm: Frontmatter, ki
 		address: text(fm[p.address]),
 		coords: parseCoords(coords) ? coords : undefined,
 		website: text(fm[p.website]),
+		phone: text(fm[p.phone]),
 		menu: text(fm[p.menu]),
 		hours: text(fm[p.hours]),
 		notes: text(fm[p.notes]),

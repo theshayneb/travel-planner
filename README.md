@@ -33,6 +33,11 @@ a standalone note later.
   from your vault (any word order, accents and apostrophes ignored). Picking one adds that note to the trip as a *visit*
   instead of creating a duplicate. A visit has its own day and time, so the same note can be visited twice, or on
   different trips, without editing the note. **Change** goes back to a new quick entry.
+- **Look up (optional).** Tap **Look up** next to the name to search OpenStreetMap. Each place it finds shows its
+  address and exactly which empty fields it would fill (address, coordinates, website, phone, and opening hours or cuisine
+  when the category has them). **Yes, use this** fills them in for you to check before saving; **No** discards the
+  results. Nothing you typed is overwritten, and nothing is fetched unless you tap it. Menus and prices aren't available
+  from any free source, so those stay manual. Turn the button off in settings.
 - **Category chips and a day list.** Categories are buttons at the top of the form; **Day** lists the trip's days, plus
   "No date (idea)" and "Another date…".
 - **Convert to note.** Turns a quick entry into a Markdown note with your property names (`tags`, `Projects`, `Date`, `Address`, …),
@@ -150,13 +155,13 @@ planner stops writing and says so, instead of guessing. Avoid editing the same t
 | Ignore notes tagged / ignore folders | `journal_entry` / `Templates` |
 | Property names | `Date`, `End_Date`, `Projects`, `Address`, `Geolink`, `Link`, `Notes`, `Image`, `Rating`, `Menu`, `Hours` |
 | Maps | Google Maps |
+| Look up places online | on (only runs when you tap **Look up**) |
 | Outfits tab / embed | on / `![[Embeds.base#TripOutfits\|no-toolbar]]` |
 | Folder / template for converted notes | next to the trip / none |
 
 ## Not yet implemented
 
 - Drag-and-drop reordering and collapsible days.
-- Automatic coordinate lookup (opt-in, OpenStreetMap Nominatim).
 - On-device verification of the Outfits tab inside the full-screen view (the embedded tabs are unaffected; the tab also
   has an **Open outfits in the trip note** button as a fallback).
 

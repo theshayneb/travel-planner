@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.3.1
+
+- **Look up** button in the add/edit form. It searches OpenStreetMap for the name (plus the address, if typed) and shows
+  each match with exactly what it would fill in. **Yes, use this** fills only empty fields; **No** discards the results.
+  It only runs when tapped and can be turned off in settings.
+- New **Phone** field, with a **Call** link on the card and a `Phone` property when converting to a note.
+
 ## 0.3.0
 
 - Add activity form, modelled on Cool Trip's:

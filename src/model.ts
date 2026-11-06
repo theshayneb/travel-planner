@@ -95,6 +95,7 @@ export interface TravelItem {
 	address?: string;
 	coords?: string; // "lat, lng"
 	website?: string;
+	phone?: string;
 	menu?: string;
 	cuisine?: string;
 	reservation?: string;
@@ -126,7 +127,7 @@ export interface DisplayItem extends TravelItem {
 }
 
 export const STRING_FIELDS = [
-	"category", "date", "time", "endDate", "endTime", "address", "coords", "website", "menu", "cuisine", "reservation",
+	"category", "date", "time", "endDate", "endTime", "address", "coords", "website", "phone", "menu", "cuisine", "reservation",
 	"hours", "tickets", "price", "confirmation", "carrier", "notes", "path",
 ] as const;
 

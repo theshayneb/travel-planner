@@ -59,6 +59,15 @@ export function setIcon(el: HTMLElement, name: string): void {
 	const svg = (window as unknown as { ICONS: Record<string, string> }).ICONS[name];
 	el.innerHTML = svg ?? `<b title="missing icon ${name}">?</b>`;
 }
+export async function requestUrl(_o: { url: string }): Promise<{ json: unknown }> {
+	return { json: [
+		{ lat: "36.1149291", lon: "-115.1406212", category: "amenity", type: "restaurant", name: "Lotus of Siam",
+			address: { house_number: "620", road: "East Flamingo Road", town: "Paradise", state: "Nevada", postcode: "89119", country: "United States" },
+			extratags: { cuisine: "thai", opening_hours: "Mo-Th 11:00-22:00; Fr,Sa 11:00-23:00; Su off", website: "https://www.lotusofsiamlv.com", phone: "+1 702-735-3033" } },
+		{ lat: "40.75", lon: "-73.98", category: "amenity", type: "restaurant", name: "Lotus of Siam",
+			address: { house_number: "71", road: "Bleecker Street", city: "New York", state: "New York", country: "United States" }, extratags: {} },
+	] };
+}
 export function normalizePath(p: string): string { return p.replace(/\/+/g, "/").replace(/^\/|\/$/g, ""); }
 
 // ---- Modal & settings, enough to draw the Add activity form ----
