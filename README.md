@@ -29,8 +29,12 @@ a standalone note later.
 - **Existing notes keep working.** Place and Event notes that link to the Trip (through `Projects` or any other link, the same
   rule as your `TripEvents` base view) appear in the itinerary using their own `Date`, `End_Date`, `Address`, `Geolink`,
   `Link`, `Notes`, `Image` and `Rating`. Their tags decide what they are. Their `Date` decides when.
-- **Use an existing note.** From the add form, pick any Place/Event note in the vault and add it as a *visit*. A visit has its
-  own date and time, so the same note can be visited twice, or on different trips, without editing the note.
+- **Finds notes you already have.** As you type a name in the add form, a dropdown lists matching Place/Event notes
+  from your vault (any word order, accents and apostrophes ignored). Picking one adds that note to the trip as a *visit*
+  instead of creating a duplicate. A visit has its own day and time, so the same note can be visited twice, or on
+  different trips, without editing the note. **Change** goes back to a new quick entry.
+- **Category chips and a day list.** Categories are buttons at the top of the form; **Day** lists the trip's days, plus
+  "No date (idea)" and "Another date…".
 - **Convert to note.** Turns a quick entry into a Markdown note with your property names (`tags`, `Projects`, `Date`, `Address`, …),
   optionally starting from a template. The entry keeps its place in the itinerary. The note is created before the Trip is
   changed, so a failure never loses the entry.
@@ -167,7 +171,7 @@ On a copy of the vault, on each device:
 | Save to ideas, then edit and give it a date | Moves from Ideas to Confirmed |
 | An activity dated yesterday | In Past |
 | An activity earlier today | Still in Confirmed |
-| Use an existing note that already links to the Trip | One card, not two |
+| Type the name of a note you already have, pick it from the dropdown | One card, linked to the note, not two |
 | Convert an inline entry to a note | New note with tags, `Projects`, `Date`; same position in the itinerary |
 | Rename a note used by a visit | The visit still resolves |
 | Outfits tab | Identical to before |

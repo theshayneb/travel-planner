@@ -33,6 +33,8 @@ const shots = [
 	["phone-past-dark", 412, "tab=past", true],
 	["phone-outfits", 412, "tab=outfits", false],
 	["phone-add-modal", 412, "tab=confirmed&modal=1", false],
+	["phone-add-modal-search", 412, "tab=confirmed&modal=1&type=sam", false],
+	["phone-add-modal-picked-dark", 412, "tab=confirmed&modal=1&type=sam&pick=1", true],
 	["column-confirmed-in-callout", 560, "tab=confirmed&tabs=confirmed&callout=1", false],
 	["desktop-full-confirmed", 1000, "tab=confirmed&full=1", false],
 	["desktop-full-confirmed-dark", 1000, "tab=confirmed&full=1", true],

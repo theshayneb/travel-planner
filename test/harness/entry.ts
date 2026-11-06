@@ -2,7 +2,6 @@
 import { TFile } from "obsidian";
 import { localDate } from "../../src/itinerary";
 import { DisplayItem, TravelData } from "../../src/model";
-import { ActivityModal } from "../../src/modals/activity";
 import { Planner, PlannerHost } from "../../src/planner";
 import { DEFAULT_SETTINGS } from "../../src/settings-model";
 import { TabId } from "../../src/tabs";
@@ -36,6 +35,11 @@ const vault = {
 	noteDetails: (p: string) => legacy.find(l => l.path === p) ?? null,
 	frontmatter: () => ({ Date: day(-1), End_Date: day(3), tags: ["travel"] }),
 	candidateNotes: () => [],
+	noteMatches: () => [
+		{ path: "Places/Sam's Town Mystic Falls Park.md", name: "Sam's Town Mystic Falls Park", kind: "place", category: "sight", folder: "Places" },
+		{ path: "Places/Sam's Town Hotel.md", name: "Sam's Town Hotel", kind: "place", category: "accomodations", folder: "Places" },
+		{ path: "Places/Samurai Sushi.md", name: "Samurai Sushi", kind: "place", category: "food", folder: "Places/Las Vegas" },
+	],
 } as unknown as TripVault;
 
 const host: PlannerHost = {
@@ -55,8 +59,12 @@ const tabs = (params.get("tabs")?.split(",") ?? ["confirmed", "ideas", "outfits"
 const planner = new Planner(host, root.createDiv({ cls: params.get("callout") ? "harness-callout" : "" }), trip, { tabs, header: full });
 planner.load();
 void planner.render().then(() => {
-	if (params.get("modal")) {
-		new ActivityModal(host.app, { defaultDate: day(1), onSubmit: async () => {}, onUseExisting: () => {} }).open();
+	if (params.get("modal")) planner.add(day(1));
+	const typed = params.get("type");
+	if (typed) {
+		const input = document.querySelector<HTMLInputElement>(".htp-name-input");
+		if (input) { input.value = typed; input.dispatchEvent(new Event("input")); }
+		if (params.get("pick")) document.querySelector<HTMLElement>(".suggestion-item")?.click();
 	}
 	document.body.setAttribute("data-ready", "1");
 });

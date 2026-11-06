@@ -2,6 +2,7 @@
 import { App, normalizePath, TFile } from "obsidian";
 import { DisplayItem, TravelData, TravelItem } from "./model";
 import { Frontmatter, isTrip, itemFromNote, noteKind, splitList, firstLinkTarget } from "./notes";
+import { NoteMatch } from "./search";
 import { PlannerSettings } from "./settings-model";
 import { extract, renamePath, update } from "./storage";
 
@@ -30,6 +31,16 @@ export class TripVault {
 	candidateNotes(): TFile[] {
 		const s = this.settings();
 		return this.app.vault.getMarkdownFiles().filter(f => !this.excluded(f) && !this.isTrip(f) && noteKind(this.frontmatter(f), s) !== null);
+	}
+
+	/** Place/Event notes as search entries for the add form. */
+	noteMatches(): NoteMatch[] {
+		const s = this.settings();
+		return this.candidateNotes().map(f => {
+			const fm = this.frontmatter(f) ?? {};
+			const item = itemFromNote(f.path, f.basename, fm, noteKind(fm, s) ?? "place", s);
+			return { path: f.path, name: item.name, kind: item.kind, category: item.category, folder: f.parent?.path === "/" ? "" : f.parent?.path ?? "" };
+		});
 	}
 
 	/** Permanent details of a Place/Event note, or null if it no longer exists. */

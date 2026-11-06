@@ -1,14 +1,14 @@
 /** The planner UI. Used by the `travel-planner` block inside Trip notes and by the full-screen view. */
 import { App, Component, MarkdownRenderer, moment, Notice, setIcon, TFile } from "obsidian";
-import { bucketOf, groupByDay, groupIdeas, localDate, mergeItems } from "./itinerary";
+import { bucketOf, groupByDay, groupIdeas, localDate, mergeItems, tripDays } from "./itinerary";
 import { mapsUrl } from "./maps";
 import { categoryOf, DisplayItem, newId, TravelData, TravelItem } from "./model";
 import { ActivityModal } from "./modals/activity";
 import { confirm } from "./modals/confirm";
-import { SelectNoteModal } from "./modals/select-note";
 import { splitDateTime } from "./notes";
 import { PlannerSettings } from "./settings-model";
 import { addItem, removeItem, replaceItem } from "./storage";
+import { matchNotes, NoteMatch } from "./search";
 import { TabId } from "./tabs";
 import { TripVault } from "./vault";
 
@@ -36,6 +36,8 @@ export class Planner extends Component {
 	private renderTimer: number | null = null;
 	private rendering = false;
 	private pending = false;
+	/** The trip's days, for the add form. */
+	private days: string[] = [];
 	private listening = false;
 
 	constructor(
@@ -98,6 +100,7 @@ export class Planner extends Component {
 		const fm = vault.frontmatter(trip) ?? {};
 		const tripStart = splitDateTime(fm[s.props.date]).date;
 		const tripEnd = splitDateTime(fm[s.props.endDate]).date;
+		this.days = tripDays(tripStart, tripEnd);
 
 		this.shown.clear();
 		this.shown.add(trip.path);
@@ -322,34 +325,17 @@ export class Planner extends Component {
 	}
 
 	add(defaultDate: string | undefined): void {
+		let notes: NoteMatch[] | null = null;
 		new ActivityModal(this.app, {
 			defaultDate,
-			onSubmit: item => this.write(d => addItem(d, item)),
-			onUseExisting: draft => this.pickExisting(draft),
-		}).open();
-	}
-
-	private pickExisting(draft: { date?: string; time?: string }): void {
-		const vault = this.host.vault;
-		new SelectNoteModal(this.app, vault.candidateNotes(), file => {
-			const note = vault.noteDetails(file.path);
-			if (!note) return;
-			const visit: TravelItem = {
-				id: newId(),
-				source: "note",
-				path: file.path,
-				name: note.name,
-				kind: note.kind,
-				category: note.category,
-				date: draft.date ?? note.date,
-				time: draft.date ? draft.time : note.time,
-			};
-			void this.write(d => {
-				if (d.items.some(i => i.source === "note" && i.path === file.path && (i.date ?? "") === (visit.date ?? ""))) {
-					throw new Error(`${note.name} is already on the trip${visit.date ? " that day" : ""}.`);
+			tripDays: this.days,
+			findNotes: q => matchNotes(q, (notes ??= this.host.vault.noteMatches())),
+			onSubmit: item => this.write(d => {
+				if (item.source === "note" && d.items.some(i => i.source === "note" && i.path === item.path && (i.date ?? "") === (item.date ?? ""))) {
+					throw new Error(`${item.name} is already on the trip${item.date ? " that day" : ""}.`);
 				}
-				return addItem(d, visit);
-			}).catch((e: unknown) => new Notice(e instanceof Error ? e.message : String(e)));
+				return addItem(d, item);
+			}),
 		}).open();
 	}
 
@@ -359,7 +345,7 @@ export class Planner extends Component {
 			id: newId(), source: "note", path: item.path, name: item.name, kind: item.kind, category: item.category,
 			date: item.date, time: item.time,
 		};
-		new ActivityModal(this.app, { item: visit, onSubmit: v => this.write(d => addItem(d, v)) }).open();
+		new ActivityModal(this.app, { item: visit, tripDays: this.days, onSubmit: v => this.write(d => addItem(d, v)) }).open();
 	}
 
 	private async stored(id: string): Promise<TravelItem | undefined> {
@@ -369,7 +355,7 @@ export class Planner extends Component {
 	private async edit(id: string): Promise<void> {
 		const item = await this.stored(id);
 		if (!item) return void new Notice("That entry changed on another device. The planner has been refreshed.");
-		new ActivityModal(this.app, { item, onSubmit: next => this.write(d => replaceItem(d, id, next)) }).open();
+		new ActivityModal(this.app, { item, tripDays: this.days, onSubmit: next => this.write(d => replaceItem(d, id, next)) }).open();
 	}
 
 	private async remove(item: DisplayItem): Promise<void> {

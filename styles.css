@@ -325,6 +325,71 @@
 }
 
 /* ---------- Modal ---------- */
+.htp-chips {
+	display: flex;
+	flex-wrap: wrap;
+	gap: var(--size-4-1) var(--size-4-2);
+	padding: var(--size-4-2) 0 var(--size-4-3);
+}
+.htp-modal .htp-chip-btn {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--size-2-2);
+	padding: var(--size-2-2) var(--size-4-2);
+	border-radius: var(--radius-l, 12px);
+	font-size: var(--font-ui-small);
+	background: var(--background-secondary);
+	color: var(--text-muted);
+	box-shadow: none;
+	border: 1px solid var(--background-modifier-border);
+	cursor: pointer;
+}
+.htp-modal .htp-chip-btn.is-active {
+	color: var(--htp-family);
+	border-color: var(--htp-family);
+	background: color-mix(in srgb, var(--htp-family) 14%, transparent);
+	font-weight: var(--font-semibold);
+}
+.htp-chip-icon,
+.htp-suggestion-icon {
+	display: inline-flex;
+}
+.htp-chip-icon svg {
+	width: var(--icon-xs);
+	height: var(--icon-xs);
+}
+.htp-modal .htp-name-input {
+	width: 100%;
+	min-width: 14em;
+}
+.htp-suggestion,
+.htp-picked {
+	display: flex;
+	align-items: center;
+	gap: var(--size-4-2);
+}
+.htp-suggestion-icon {
+	color: var(--htp-family, var(--text-muted));
+}
+.htp-suggestion-icon svg {
+	width: var(--icon-s);
+	height: var(--icon-s);
+}
+.htp-suggestion-text {
+	min-width: 0;
+	flex: 1 1 auto;
+}
+.htp-suggestion-meta {
+	font-size: var(--font-ui-smaller);
+	color: var(--text-muted);
+}
+.htp-picked {
+	padding: var(--size-4-2) var(--size-4-3);
+	margin: var(--size-4-2) 0;
+	border-radius: var(--radius-m, 8px);
+	background: var(--background-secondary);
+}
+
 .htp-modal .setting-item-control input[type="date"],
 .htp-modal .setting-item-control input[type="time"] {
 	min-width: 8em;

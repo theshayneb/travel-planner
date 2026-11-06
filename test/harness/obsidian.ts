@@ -76,6 +76,30 @@ export class Modal {
 	onOpen(): void {}
 	onClose(): void {}
 }
+export abstract class AbstractInputSuggest<T> {
+	limit = 100;
+	private box: HTMLElement | null = null;
+	constructor(public app: unknown, private readonly input: HTMLInputElement) {
+		input.addEventListener("input", () => void this.show());
+	}
+	protected abstract getSuggestions(query: string): T[];
+	abstract renderSuggestion(value: T, el: HTMLElement): void;
+	selectSuggestion(_value: T): void {}
+	close(): void { this.box?.remove(); this.box = null; }
+	private show(): void {
+		this.close();
+		const items = this.getSuggestions(this.input.value);
+		if (!items.length) return;
+		const r = this.input.getBoundingClientRect();
+		this.box = document.body.createDiv({ cls: "suggestion-container" });
+		this.box.style.cssText = `position:fixed;left:${r.left}px;top:${r.bottom + 4}px;width:${Math.max(r.width, 280)}px`;
+		for (const item of items) {
+			const row = this.box.createDiv({ cls: "suggestion-item" });
+			this.renderSuggestion(item, row);
+			row.addEventListener("click", () => this.selectSuggestion(item));
+		}
+	}
+}
 export class FuzzySuggestModal<T> extends Modal { setPlaceholder(): void {} getItems(): T[] { return []; } }
 export class ButtonComponent {
 	buttonEl: HTMLButtonElement;
@@ -114,4 +138,5 @@ export class Setting {
 	addTextArea(cb: (t: InputComp<HTMLTextAreaElement>) => void): this { cb(new InputComp(this.control.createEl("textarea"))); return this; }
 	addDropdown(cb: (d: DropdownComp) => void): this { cb(new DropdownComp(this.control.createEl("select", { cls: "dropdown" }))); return this; }
 	addButton(cb: (b: ButtonComponent) => void): this { cb(new ButtonComponent(this.control)); return this; }
+	addDropdownPlaceholder(): this { return this; }
 }

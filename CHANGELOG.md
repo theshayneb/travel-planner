@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.3.0
+
+- Add activity form, modelled on Cool Trip's:
+  - Typing a name searches your Place/Event notes and lists matches in a dropdown (any word order; accents and
+    apostrophes ignored). Picking one adds that note to the trip instead of a duplicate entry; **Change** goes back.
+  - Categories are buttons with icons at the top instead of a dropdown.
+  - **Day** lists the trip's days, plus "No date (idea)" and "Another date…".
+- The separate "Use an existing note" button is gone; the name search replaces it.
+
 ## 0.2.8
 
 - The Add activity button sits at the top right, next to the full-screen button.

@@ -97,3 +97,20 @@ export function groupIdeas(items: DisplayItem[]): IdeaGroup[] {
 		.sort(([a], [b]) => a.localeCompare(b))
 		.map(([label, list]) => ({ label, items: list.sort((a, b) => a.name.localeCompare(b.name)) }));
 }
+
+/** Every calendar day of the trip (YYYY-MM-DD), for the add form's day list. At most `limit` days. */
+export function tripDays(start: string | undefined, end: string | undefined, limit = 60): string[] {
+	const iso = /^\d{4}-\d{2}-\d{2}$/;
+	if (!start || !iso.test(start)) return [];
+	const last = end && iso.test(end) && end >= start ? end : start;
+	const [y, m, d] = start.split("-").map(Number);
+	const cursor = new Date(y, m - 1, d);
+	const out: string[] = [];
+	while (out.length < limit) {
+		const day = localDate(cursor);
+		if (day > last) break;
+		out.push(day);
+		cursor.setDate(cursor.getDate() + 1);
+	}
+	return out;
+}
