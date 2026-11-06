@@ -1,0 +1,38 @@
+/* Roughly Obsidian's default theme variables, enough for screenshots. */
+body {
+	--color-red: #e93147; --color-red-rgb: 233, 49, 71;
+	--color-orange: #ec7500; --color-orange-rgb: 236, 117, 0;
+	--color-green: #08b94e; --color-green-rgb: 8, 185, 78;
+	--color-cyan: #00bfbc; --color-cyan-rgb: 0, 191, 188;
+	--color-blue: #086ddd; --color-blue-rgb: 8, 109, 221;
+	--color-purple: #7852ee; --color-purple-rgb: 120, 82, 238;
+	--color-accent: #8a5cf5; --interactive-accent: #8a5cf5; --text-on-accent: #fff;
+	--background-primary: #ffffff; --background-secondary: #f6f6f6; --background-modifier-border: #e0e0e0;
+	--background-modifier-hover: rgba(0,0,0,.075); --text-normal: #222; --text-muted: #5c5c5c; --text-faint: #999; --text-error: #e93147;
+	--font-ui-smaller: 12px; --font-ui-small: 13px; --font-ui-medium: 15px; --font-ui-large: 17px;
+	--font-semibold: 600; --font-bold: 700; --radius-s: 4px; --radius-m: 8px; --radius-l: 12px;
+	--size-2-1: 2px; --size-2-2: 4px; --size-4-1: 4px; --size-4-2: 8px; --size-4-3: 12px; --size-4-4: 16px; --size-4-5: 20px; --size-4-12: 48px;
+	--icon-xs: 14px; --icon-s: 16px; --icon-m: 18px; --shadow-s: 0 1px 3px rgba(0,0,0,.15);
+	font-family: -apple-system, "Segoe UI", Inter, Roboto, sans-serif; margin: 0; padding: 16px;
+	background: var(--background-primary); color: var(--text-normal);
+}
+body.theme-dark {
+	--color-accent: #a68af9; --interactive-accent: #8a5cf5;
+	--background-primary: #1e1e1e; --background-secondary: #262626; --background-modifier-border: #363636;
+	--background-modifier-hover: rgba(255,255,255,.075); --text-normal: #dadada; --text-muted: #b3b3b3; --text-faint: #666;
+}
+button { font: inherit; font-size: 13px; border: 0; border-radius: 4px; padding: 4px 12px; background: var(--background-secondary); color: var(--text-normal); box-shadow: var(--shadow-s); cursor: pointer; }
+button.mod-cta { background: var(--interactive-accent); color: #fff; }
+button.clickable-icon { background: transparent; box-shadow: none; padding: 4px; color: var(--text-muted); display: inline-flex; }
+svg { width: 18px; height: 18px; }
+a { color: var(--color-accent); }
+.modal-container { position: fixed; inset: 0; background: rgba(0,0,0,.45); display: flex; align-items: flex-start; justify-content: center; padding-top: 24px; overflow: auto; }
+.modal { background: var(--background-primary); border-radius: 12px; padding: 20px; width: min(560px, calc(100vw - 32px)); box-shadow: 0 8px 30px rgba(0,0,0,.3); }
+.modal-title { font-weight: 700; font-size: 18px; margin-bottom: 8px; }
+.setting-item { display: flex; gap: 12px; align-items: center; justify-content: space-between; padding: 10px 0; border-top: 1px solid var(--background-modifier-border); flex-wrap: wrap; }
+.setting-item-name { font-size: 15px; } .setting-item-description { font-size: 12px; color: var(--text-muted); }
+.setting-item-control { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
+input, textarea, select { font: inherit; font-size: 14px; padding: 4px 8px; border: 1px solid var(--background-modifier-border); border-radius: 4px; background: var(--background-primary); color: var(--text-normal); }
+.harness-embed { font-size: 12px; color: var(--text-muted); }
+.harness-outfits { display: flex; gap: 10px; margin-top: 8px; }
+.harness-outfit { width: 120px; height: 150px; border-radius: 8px; background: var(--background-secondary); display: flex; align-items: end; padding: 8px; font-size: 12px; color: var(--text-normal); }
