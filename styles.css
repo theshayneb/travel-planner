@@ -1,4 +1,4 @@
-/* Hybrid Travel Planner. Colours come from the Obsidian theme, so light, dark and custom themes all work. */
+/* Travel Planner. Colours come from the Obsidian theme, so light, dark and custom themes all work. */
 
 .htp-planner {
 	--htp-radius: var(--radius-m, 8px);

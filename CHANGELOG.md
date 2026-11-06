@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.2.5
+
+- Renamed to **Travel Planner**. The plugin ID stays `hybrid-travel-planner`, so the update installs over the
+  existing plugin and keeps its settings.
+
 ## 0.2.4
 
 - Categories are now your travel tags: food, sight, museum, outdoors, activity, tour, shopping and accomodations

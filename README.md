@@ -1,4 +1,4 @@
-# Hybrid Travel Planner for Obsidian
+# Travel Planner for Obsidian
 
 Plan trips inside the Trip notes you already have. Add a restaurant, sight, show or flight from a short form,
 without creating a separate note. Your existing Place and Event notes still show up, and any quick entry can be turned into
@@ -44,7 +44,7 @@ a standalone note later.
 
 1. Install **BRAT** from Community plugins.
 2. BRAT → **Add beta plugin** → `theshayneb/travel-planner`.
-3. Enable **Hybrid Travel Planner** in Settings → Community plugins.
+3. Enable **Travel Planner** in Settings → Community plugins.
 
 To have it on every device, turn on **Settings → Sync → Vault configuration sync → Installed community plugins** (and
 **Active community plugin list**) on the desktop, phone and tablet. Restart Obsidian after a plugin update arrives through Sync.
