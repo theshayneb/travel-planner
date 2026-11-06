@@ -285,8 +285,10 @@
 }
 .htp-tools {
 	display: flex;
+	flex: 0 0 auto;
+	align-self: flex-start;
 	gap: var(--size-2-1);
-	margin-left: auto;
+	margin: calc(-1 * var(--size-2-2)) calc(-1 * var(--size-2-2)) 0 0;
 }
 
 .htp-thumb {
@@ -470,11 +472,6 @@
 	.htp-thumb {
 		width: 52px;
 		height: 52px;
-	}
-	.htp-tools {
-		margin-left: 0;
-		width: 100%;
-		justify-content: flex-end;
 	}
 	.htp-header {
 		flex-direction: column;

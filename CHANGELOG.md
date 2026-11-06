@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.3.2
+
+- Card buttons (open note, schedule, edit, convert, delete) sit in the card's top-right corner. Cards without Map or
+  Website links no longer end with an empty strip.
+
 ## 0.3.1
 
 - **Look up** button in the add/edit form. It searches OpenStreetMap for the name (plus the address, if typed) and shows

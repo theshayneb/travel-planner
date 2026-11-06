@@ -275,7 +275,8 @@ export class Planner extends Component {
 		if (item.notes) main.createDiv({ cls: "htp-notes", text: item.notes });
 		if (item.visitNotes) main.createDiv({ cls: "htp-notes htp-visit-notes", text: item.visitNotes });
 
-		const actions = main.createDiv({ cls: "htp-actions" });
+		// Links row only when there are links, so cards without any don't get an empty strip.
+		const actions = createDiv({ cls: "htp-actions" });
 		const map = mapsUrl(item, this.host.getSettings().mapsProvider);
 		if (map && (item.address || item.coords)) this.link(actions, "map", "Map", map);
 		if (item.menu) this.link(actions, "book-open", "Menu", item.menu);
@@ -283,7 +284,10 @@ export class Planner extends Component {
 		if (item.phone) this.link(actions, "phone", "Call", `tel:${item.phone.replace(/[^\d+]/g, "")}`);
 		if (item.tickets && /^https?:/i.test(item.tickets)) this.link(actions, "ticket", "Tickets", item.tickets);
 
-		const tools = actions.createDiv({ cls: "htp-tools" });
+		if (actions.childElementCount) main.appendChild(actions);
+
+		// Open note / schedule / edit / delete sit in the card's top-right corner.
+		const tools = card.createDiv({ cls: "htp-tools" });
 		if (item.path && !item.missing) this.tool(tools, "file-text", "Open note", () => this.openNote(item.path ?? ""));
 		if (item.origin === "legacy") {
 			this.tool(tools, "calendar-plus", item.date ? "Schedule another visit" : "Schedule", () => this.scheduleNote(item));
