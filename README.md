@@ -21,9 +21,11 @@ a standalone note later.
   - **Ideas:** activities with no date, grouped by category.
   - **Outfits:** your existing `Embeds.base#TripOutfits` view, rendered unchanged. The plugin does not recreate any outfit logic.
   - **Past:** activities dated before today.
-- **Quick add.** Name is the only required field. The form changes with the category: menu, cuisine and reservation for a
-  restaurant; hours, price and tickets for a museum; end time, tickets and confirmation for a show; check-out date for a
-  hotel; carrier and confirmation for a flight. **Save to ideas** keeps it undated.
+- **Quick add.** Name is the only required field. Categories are your own travel tags: food, sight, museum, outdoors,
+  activity, tour, shopping and accomodations (hotels and flights), plus show, event and other place. The form changes with
+  the category: menu, cuisine and reservation for food; hours, price and tickets for sights and museums; end time, tickets
+  and confirmation for activities and tours; end date, airline or company, and confirmation for accomodations.
+  **Save to ideas** keeps it undated.
 - **Existing notes keep working.** Place and Event notes that link to the Trip (through `Projects` or any other link, the same
   rule as your `TripEvents` base view) appear in the itinerary using their own `Date`, `End_Date`, `Address`, `Geolink`,
   `Link`, `Notes`, `Image` and `Rating`. Their tags decide what they are. Their `Date` decides when.
@@ -34,8 +36,9 @@ a standalone note later.
   changed, so a failure never loses the entry.
 - **Map, menu, website and ticket links** on each card. Maps can open in Google Maps, Apple Maps or the device's maps app
   (Android).
-- **Bookings stand out.** Shows, events, flights and hotels get a filled card. Meals are orange, sights green, events your accent colour,
-  stays blue, transport cyan, all from your theme's colours.
+- **Colours by category, from your theme:** food orange; sight, museum and outdoors green; activity, tour, show and event
+  your accent colour; accomodations blue; shopping pink. Activities, tours, events and accomodations are bookings, so their
+  cards are tinted. Existing notes take the colour of whichever of their tags names a category.
 
 ## Install (BRAT)
 

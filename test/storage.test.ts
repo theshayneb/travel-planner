@@ -20,7 +20,7 @@ const currentFileName = dv.current().file.name;
 \`\`\`
 `;
 
-const item = (over: Partial<TravelItem> = {}): TravelItem => ({ id: "a", source: "inline", kind: "place", category: "restaurant", name: "Lotus", ...over });
+const item = (over: Partial<TravelItem> = {}): TravelItem => ({ id: "a", source: "inline", kind: "place", category: "food", name: "Lotus", ...over });
 const data = (...items: TravelItem[]): TravelData => ({ version: 1, items });
 
 describe("reading", () => {

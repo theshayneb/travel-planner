@@ -1,5 +1,5 @@
 /** Reads existing Trip / Place / Event notes from their frontmatter. Pure: no Obsidian imports. */
-import { DisplayItem, Kind } from "./model";
+import { DisplayItem, isCategory, Kind } from "./model";
 import { PlannerSettings } from "./settings-model";
 
 export type Frontmatter = Record<string, unknown>;
@@ -94,7 +94,8 @@ export function itemFromNote(path: string, basename: string, fm: Frontmatter, ki
 		source: "note",
 		path,
 		kind,
-		category: tags[0] ?? kind,
+		// The first tag that names a category (e.g. food among friends_family, food), else the first descriptive tag.
+		category: tags.find(isCategory) ?? tags[0] ?? kind,
 		name: basename,
 		date: start.date,
 		time: start.time,

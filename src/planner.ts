@@ -233,7 +233,7 @@ export class Planner extends Component {
 	private drawCard(parent: HTMLElement, item: DisplayItem): void {
 		const cat = categoryOf(item.category, item.kind);
 		const card = parent.createDiv({ cls: `htp-card htp-family-${cat.family}` });
-		if (["event", "transport", "stay"].includes(cat.family)) card.addClass("htp-card--booking");
+		if (["event", "stay"].includes(cat.family)) card.addClass("htp-card--booking");
 
 		const when = card.createDiv({ cls: "htp-when" });
 		if (item.time) {

@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { bucketOf, groupByDay, groupIdeas, localDate, mergeItems } from "../src/itinerary";
 import { DisplayItem, TravelItem } from "../src/model";
 
-const inline = (over: Partial<TravelItem>): TravelItem => ({ id: over.name ?? "x", source: "inline", kind: "place", category: "restaurant", name: "x", ...over });
+const inline = (over: Partial<TravelItem>): TravelItem => ({ id: over.name ?? "x", source: "inline", kind: "place", category: "food", name: "x", ...over });
 const legacy = (over: Partial<DisplayItem>): DisplayItem => ({ id: `legacy:${over.path}`, origin: "legacy", source: "note", kind: "place", category: "sight", name: "n", ...over });
 
 describe("buckets", () => {
@@ -71,6 +71,6 @@ describe("grouping", () => {
 
 	it("groups ideas by category", () => {
 		const groups = groupIdeas(mergeItems([inline({ name: "Zed" }), inline({ name: "Art", category: "museum" }), inline({ name: "Abe" })], [], () => null));
-		expect(groups.map(g => [g.label, g.items.map(i => i.name)])).toEqual([["Museum", ["Art"]], ["Restaurant", ["Abe", "Zed"]]]);
+		expect(groups.map(g => [g.label, g.items.map(i => i.name)])).toEqual([["Food", ["Abe", "Zed"]], ["Museum", ["Art"]]]);
 	});
 });

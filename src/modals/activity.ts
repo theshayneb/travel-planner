@@ -19,9 +19,9 @@ const FIELD_LABELS: Record<ExtraField, { name: string; placeholder?: string; typ
 	tickets: { name: "Tickets", placeholder: "https://…", type: "url" },
 	price: { name: "Price", placeholder: "$25 per person" },
 	confirmation: { name: "Confirmation", placeholder: "Booking code" },
-	carrier: { name: "Carrier", placeholder: "Airline or operator, flight number" },
+	carrier: { name: "Airline or company", placeholder: "Delta DL 1234, Marriott…" },
 	endTime: { name: "End time", type: "time" },
-	endDate: { name: "Check-out date", type: "date" },
+	endDate: { name: "End or check-out date", type: "date" },
 };
 
 /** Add or edit an inline entry. A visit to an existing note only edits its date, time and visit details. */
@@ -35,7 +35,7 @@ export class ActivityModal extends Modal {
 		this.isVisit = base?.source === "note";
 		this.draft = base
 			? { ...base }
-			: { id: newId(), source: "inline", kind: "place", category: "restaurant", name: "", date: options.defaultDate };
+			: { id: newId(), source: "inline", kind: "place", category: "food", name: "", date: options.defaultDate };
 	}
 
 	onOpen(): void {
@@ -66,7 +66,7 @@ export class ActivityModal extends Modal {
 
 		if (!this.isVisit) {
 			new Setting(el).setName("Name").addText(t => {
-				t.setPlaceholder("Restaurant, museum, flight…").setValue(d.name).onChange(v => (d.name = v));
+				t.setPlaceholder("Restaurant, museum, tour, flight…").setValue(d.name).onChange(v => (d.name = v));
 				window.setTimeout(() => t.inputEl.focus(), 0);
 			});
 			new Setting(el).setName("Category").addDropdown(dd => {

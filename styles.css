@@ -159,7 +159,7 @@
 /* Events and shows use the theme's accent colour. */
 .htp-family-event { --htp-family: var(--interactive-accent); }
 .htp-family-stay { --htp-family: var(--color-blue); }
-.htp-family-transport { --htp-family: var(--color-cyan); }
+.htp-family-shop { --htp-family: var(--color-pink); }
 .htp-family-other { --htp-family: var(--color-base-60, var(--text-muted)); }
 
 /* Bookings (shows, events, flights, hotels) stand out from meals and sights. */

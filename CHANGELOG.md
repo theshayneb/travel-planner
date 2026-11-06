@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.2.4
+
+- Categories are now your travel tags: food, sight, museum, outdoors, activity, tour, shopping and accomodations
+  (hotels and flights), plus show, event and other place. Converting a quick entry tags the new note the same way.
+- Existing notes use whichever of their tags names a category, even when it isn't the first tag.
+- Older names still work: restaurant, bar and café count as food; hotel, flight and transport as accomodations; shop as
+  shopping; park as outdoors; attraction as activity.
+- Colours: activity and tour use your accent colour like events; shopping is pink; accomodations blue.
+
 ## 0.2.3
 
 - Events and shows use your Obsidian accent colour instead of purple.

@@ -48,6 +48,12 @@ describe("reading an existing Place note", () => {
 		expect(item.notes).toBe("📅Monday - Thursday: 6pm, 8pm, 10pm\n📅Friday - Sunday: 4pm, 6pm, 8pm, 10pm");
 	});
 
+	it("picks the tag that names a category, whatever its position", () => {
+		expect(itemFromNote("a.md", "A", { tags: ["place", "friends_family", "food"] }, "place", s).category).toBe("food");
+		expect(itemFromNote("f.md", "F", { tags: ["event", "travel", "accomodations"] }, "event", s).category).toBe("accomodations");
+		expect(itemFromNote("b.md", "B", { tags: ["event", "broadway"] }, "event", s).category).toBe("broadway");
+	});
+
 	it("reads the flight's end time from End_Date", () => {
 		const item = itemFromNote("f.md", "TPA to LGA", { Date: "2026-05-12T08:30:00", End_Date: "2026-05-12T10:45:00", tags: ["event", "travel"] }, "event", s);
 		expect(item).toMatchObject({ date: "2026-05-12", time: "08:30", endTime: "10:45", endDate: undefined, category: "event" });
@@ -83,9 +89,22 @@ describe("helpers", () => {
 		expect(mapsUrl(place, "geo")).toMatch(/^geo:36.11,-115.06/);
 	});
 
+	it("uses the vault's own travel tags as categories", () => {
+		for (const tag of ["food", "sight", "museum", "outdoors", "activity", "tour", "shopping", "accomodations"]) {
+			expect(categoryOf(tag).id).toBe(tag);
+		}
+		expect(categoryOf("Museum")).toMatchObject({ id: "museum", family: "sight" });
+		expect(categoryOf("activity").family).toBe("event");
+	});
+
+	it("files flights and hotels under accomodations, and old names under the vault's tags", () => {
+		for (const name of ["flight", "hotel", "accommodations", "transport"]) expect(categoryOf(name).id).toBe("accomodations");
+		expect(categoryOf("restaurant").id).toBe("food");
+		expect(categoryOf("shop").id).toBe("shopping");
+	});
+
 	it("keeps free-text categories from existing notes", () => {
 		expect(categoryOf("broadway", "event")).toMatchObject({ label: "Broadway", family: "event" });
-		expect(categoryOf("Museum")).toMatchObject({ id: "museum", family: "sight" });
 	});
 
 	it("parses planner block contents", () => {

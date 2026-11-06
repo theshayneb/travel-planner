@@ -16,7 +16,7 @@ export type ExtraField =
 	| "endDate";
 
 /** Visual family: decides the card colour and how prominent the card is in a day. */
-export type Family = "food" | "sight" | "event" | "stay" | "transport" | "other";
+export type Family = "food" | "sight" | "event" | "stay" | "shop" | "other";
 
 export interface CategoryDef {
 	id: string;
@@ -27,29 +27,47 @@ export interface CategoryDef {
 	fields: ExtraField[];
 }
 
+/**
+ * Categories, named after the vault's own YAML tags (food, sight, museum, activity, tour, outdoors, shopping,
+ * accomodations, which covers hotels and flights). A note converted from a quick entry is tagged with the category's id.
+ */
 export const CATEGORIES: CategoryDef[] = [
-	{ id: "restaurant", label: "Restaurant", kind: "place", family: "food", icon: "utensils", fields: ["menu", "cuisine", "reservation", "hours"] },
-	{ id: "bar", label: "Bar", kind: "place", family: "food", icon: "wine", fields: ["menu", "reservation", "hours"] },
-	{ id: "cafe", label: "Café", kind: "place", family: "food", icon: "coffee", fields: ["menu", "hours"] },
+	{ id: "food", label: "Food", kind: "place", family: "food", icon: "utensils", fields: ["menu", "cuisine", "reservation", "hours"] },
 	{ id: "sight", label: "Sight", kind: "place", family: "sight", icon: "camera", fields: ["hours", "price", "tickets"] },
 	{ id: "museum", label: "Museum", kind: "place", family: "sight", icon: "landmark", fields: ["hours", "price", "tickets"] },
-	{ id: "attraction", label: "Attraction", kind: "place", family: "sight", icon: "ferris-wheel", fields: ["hours", "price", "tickets"] },
-	{ id: "park", label: "Park", kind: "place", family: "sight", icon: "trees", fields: ["hours"] },
-	{ id: "shop", label: "Shop", kind: "place", family: "other", icon: "shopping-bag", fields: ["hours"] },
+	{ id: "outdoors", label: "Outdoors", kind: "place", family: "sight", icon: "mountain", fields: ["hours", "price"] },
+	{ id: "activity", label: "Activity", kind: "place", family: "event", icon: "party-popper", fields: ["endTime", "hours", "price", "tickets", "confirmation"] },
+	{ id: "tour", label: "Tour", kind: "place", family: "event", icon: "flag", fields: ["endTime", "price", "tickets", "confirmation"] },
+	{ id: "shopping", label: "Shopping", kind: "place", family: "shop", icon: "shopping-bag", fields: ["hours"] },
+	// Hotels and flights alike (the vault tags both "accomodations").
+	{ id: "accomodations", label: "Accommodations", kind: "place", family: "stay", icon: "luggage", fields: ["endDate", "endTime", "carrier", "confirmation"] },
 	{ id: "show", label: "Show", kind: "event", family: "event", icon: "ticket", fields: ["endTime", "tickets", "confirmation"] },
 	{ id: "event", label: "Event", kind: "event", family: "event", icon: "calendar", fields: ["endTime", "tickets", "confirmation"] },
-	{ id: "hotel", label: "Hotel", kind: "event", family: "stay", icon: "bed", fields: ["endDate", "confirmation"] },
-	{ id: "flight", label: "Flight", kind: "event", family: "transport", icon: "plane", fields: ["endTime", "carrier", "confirmation"] },
-	{ id: "transport", label: "Transport", kind: "event", family: "transport", icon: "train-front", fields: ["endTime", "carrier", "confirmation"] },
 	{ id: "place", label: "Other place", kind: "place", family: "other", icon: "map-pin", fields: ["hours"] },
 ];
 
+/** Other names for the same categories (common spellings and the categories of earlier versions). */
+const ALIASES: Record<string, string> = {
+	restaurant: "food", bar: "food", cafe: "food", "café": "food", dining: "food", drinks: "food",
+	attraction: "activity", activities: "activity",
+	park: "outdoors", hike: "outdoors", hiking: "outdoors", beach: "outdoors",
+	shop: "shopping",
+	hotel: "accomodations", flight: "accomodations", flights: "accomodations", transport: "accomodations", train: "accomodations", accommodations: "accomodations", accommodation: "accomodations", lodging: "accomodations", stay: "accomodations",
+	tours: "tour", museums: "museum", sights: "sight",
+};
+
 const BY_ID = new Map(CATEGORIES.map(c => [c.id, c]));
+
+/** True when a tag names one of the categories (directly or through an alias). */
+export function isCategory(tag: string): boolean {
+	const key = tag.trim().toLowerCase();
+	return BY_ID.has(key) || key in ALIASES;
+}
 
 /** Look up a category, tolerating free-text categories from existing notes (e.g. "sight", "Museum", "broadway"). */
 export function categoryOf(id: string | undefined, kind: Kind = "place"): CategoryDef {
 	const key = (id ?? "").trim().toLowerCase();
-	const found = BY_ID.get(key);
+	const found = BY_ID.get(ALIASES[key] ?? key);
 	if (found) return found;
 	const fallback = BY_ID.get(kind === "event" ? "event" : "place");
 	if (!fallback) throw new Error("Category table is missing its fallbacks.");

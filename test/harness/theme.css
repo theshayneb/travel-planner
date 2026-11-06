@@ -5,7 +5,7 @@ body {
 	--color-green: #08b94e; --color-green-rgb: 8, 185, 78;
 	--color-cyan: #00bfbc; --color-cyan-rgb: 0, 191, 188;
 	--color-blue: #086ddd; --color-blue-rgb: 8, 109, 221;
-	--color-purple: #7852ee; --color-purple-rgb: 120, 82, 238;
+	--color-purple: #7852ee; --color-purple-rgb: 120, 82, 238; --color-pink: #d53984;
 	--color-accent: #8a5cf5; --interactive-accent: #8a5cf5; --text-on-accent: #fff;
 	--background-primary: #ffffff; --background-secondary: #f6f6f6; --background-modifier-border: #e0e0e0;
 	--background-modifier-hover: rgba(0,0,0,.075); --text-normal: #222; --text-muted: #5c5c5c; --text-faint: #999; --text-error: #e93147;
