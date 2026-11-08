@@ -343,17 +343,18 @@
 
 /* ---------- Outfit card under each day (same look as the outfit strip) ---------- */
 .htp-outfit {
+	flex: 0 0 112px;
+	align-self: flex-start;
 	display: flex;
 	flex-direction: column;
 	gap: 3px;
-	width: 120px;
 	box-sizing: border-box;
 	padding: 4px;
-	margin-bottom: var(--size-4-2);
 	border-radius: 10px;
 	border: 1px solid var(--background-modifier-border);
 	background: var(--background-secondary);
 	font-size: var(--font-ui-smaller);
+	min-width: 0;
 }
 .htp-planner .htp-outfit-photo {
 	height: 100px;
@@ -565,6 +566,26 @@
 
 /* ---------- Phone and narrow panes ---------- */
 @container (max-width: 480px) {
+	/* The outfit shrinks a little, and the card's buttons move to their own row at the bottom. */
+	.htp-card.has-outfit {
+		flex-wrap: wrap;
+	}
+	.htp-card.has-outfit .htp-main {
+		flex: 1 1 0;
+	}
+	.htp-card.has-outfit .htp-outfit {
+		flex-basis: 84px;
+		padding: 3px;
+	}
+	.htp-card.has-outfit .htp-outfit-photo {
+		height: 92px;
+	}
+	.htp-card.has-outfit .htp-tools {
+		order: 10;
+		flex: 1 0 100%;
+		justify-content: flex-end;
+		margin: 0;
+	}
 	/* Weather goes under the time instead of beside it, to keep room for the card's text. */
 	.htp-planner.htp-has-weather .htp-card .htp-when.htp-when--wx {
 		flex: 0 0 4.6em;

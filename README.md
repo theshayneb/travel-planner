@@ -21,7 +21,7 @@ a standalone note later.
   - **Ideas:** activities with no date, grouped by category.
   - **Past:** activities dated before today.
   - **Outfits** (only with outfit cards off): your existing `Embeds.base#TripOutfits` view, rendered unchanged.
-- **Each day's outfit.** Under each day's plans, a card in the style of the outfit strip: the outfit's photo (its `Image`
+- **Each day's outfit.** Inside each day's first card, on the right, in the style of the outfit strip: the outfit's photo (its `Image`
   property, or the first image in the note), any other outfits that day as "+ name", and small icons for make-up,
   lockets, watch bands and manicures. Outfits and extras are found the way the strip finds them: notes tagged `outfit`
   (or one of the extras' tags) whose `Dates` property links to that day's daily note (`[[2026-11-22]]`). A coming day

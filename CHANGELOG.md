@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.4.2
+
+- The day's outfit sits inside its first card, on the right next to the card's buttons, instead of in a separate card
+  under the day. On phones it is a little smaller and the card's buttons move to a row at the bottom.
+
 ## 0.4.1
 
 - Weather reads top to bottom: the sky icon, ↑ high, ↓ low, and a raindrop with the chance of rain (left out when rain

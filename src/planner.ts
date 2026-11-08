@@ -219,9 +219,11 @@ export class Planner extends Component {
 			add.onClickEvent(() => this.add(g.date));
 			// The day's weather sits beside the time on its first card.
 			const weather = this.weatherByDay?.[g.date];
+			// The day's weather and outfit go on its first card.
+			const outfits = this.host.getSettings().outfitsUnderDays;
 			let first = true;
 			const draw = (item: DisplayItem) => {
-				this.drawCard(day, item, first ? weather : undefined);
+				this.drawCard(day, item, first ? weather : undefined, first && outfits ? { date: g.date, past: g.date < today } : undefined);
 				first = false;
 			};
 			for (const item of g.timed) draw(item);
@@ -229,7 +231,6 @@ export class Planner extends Component {
 				if (g.timed.length) day.createDiv({ cls: "htp-anytime", text: "Any time" });
 				for (const item of g.untimed) draw(item);
 			}
-			if (this.host.getSettings().outfitsUnderDays) this.drawOutfitCard(day, g.date, g.date < today);
 		}
 	}
 
@@ -262,11 +263,12 @@ export class Planner extends Component {
 		if (rain !== null) line("htp-wx-rain", "droplet", `${rain}%`);
 	}
 
-	/** The day's outfit card: photo, more outfits, small icons for make-up and accessories, or "+ pick". */
-	private drawOutfitCard(day: HTMLElement, date: string, past: boolean): void {
+	/** The day's outfit, inside its first card: photo, more outfits, icons for make-up and accessories, or "+ pick". */
+	private drawOutfitCard(parent: HTMLElement, date: string, past: boolean): void {
 		const data = this.outfitsByDay.get(date);
 		if (!data && past) return;
-		const card = day.createDiv({ cls: "htp-outfit" });
+		parent.addClass("has-outfit");
+		const card = parent.createDiv({ cls: "htp-outfit" });
 		const [first, ...more] = data?.outfits ?? [];
 		if (first) {
 			const photo = card.createEl("button", { cls: "htp-outfit-photo", attr: { "aria-label": `Open ${first.name}` } });
@@ -312,7 +314,7 @@ export class Planner extends Component {
 		b.onClickEvent(() => void this.app.workspace.getLeaf(false).openFile(this.trip));
 	}
 
-	private drawCard(parent: HTMLElement, item: DisplayItem, weather?: DayWeather): void {
+	private drawCard(parent: HTMLElement, item: DisplayItem, weather?: DayWeather, outfit?: { date: string; past: boolean }): void {
 		const cat = categoryOf(item.category, item.kind);
 		const card = parent.createDiv({ cls: `htp-card htp-family-${cat.family}` });
 		if (["event", "stay"].includes(cat.family)) card.addClass("htp-card--booking");
@@ -372,6 +374,8 @@ export class Planner extends Component {
 		if (item.tickets && /^https?:/i.test(item.tickets)) this.link(actions, "ticket", "Tickets", item.tickets);
 
 		if (actions.childElementCount) main.appendChild(actions);
+
+		if (outfit) this.drawOutfitCard(card, outfit.date, outfit.past);
 
 		// Open note / schedule / edit / delete sit in the card's top-right corner.
 		const tools = card.createDiv({ cls: "htp-tools" });
