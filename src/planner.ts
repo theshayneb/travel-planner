@@ -250,12 +250,16 @@ export class Planner extends Component {
 		const { icon, label } = weatherIcon(w.code);
 		const rain = w.rain !== null && w.rain >= RAIN_MIN ? w.rain : null;
 		const box = parent.createDiv({ cls: "htp-wx", attr: { "aria-label": `${label}, high ${w.hi}°, low ${w.lo}°${rain !== null ? `, ${rain}% chance of rain` : ""}` } });
-		const top = box.createDiv({ cls: "htp-wx-top" });
-		setIcon(top.createSpan({ cls: "htp-wx-icon" }), icon);
-		top.createSpan({ text: `${w.hi}°` });
-		const bottom = box.createDiv({ cls: "htp-wx-bottom" });
-		bottom.createSpan({ text: `/${w.lo}°` });
-		if (rain !== null) bottom.createSpan({ cls: "htp-wx-rain", text: `${rain}%` });
+		// One line each: the sky, ↑ high, ↓ low, and the chance of rain when there is one.
+		setIcon(box.createDiv({ cls: "htp-wx-icon" }), icon);
+		const line = (cls: string, lineIcon: string, text: string) => {
+			const row = box.createDiv({ cls: `htp-wx-line ${cls}` });
+			setIcon(row.createSpan({ cls: "htp-wx-mark" }), lineIcon);
+			row.createSpan({ text });
+		};
+		line("htp-wx-hi", "arrow-up", `${w.hi}°`);
+		line("htp-wx-lo", "arrow-down", `${w.lo}°`);
+		if (rain !== null) line("htp-wx-rain", "droplet", `${rain}%`);
 	}
 
 	/** The day's outfit card: photo, more outfits, small icons for make-up and accessories, or "+ pick". */

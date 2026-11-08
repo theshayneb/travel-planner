@@ -300,29 +300,45 @@
 	text-align: right;
 }
 .htp-wx {
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
 	font-size: var(--font-ui-smaller);
-	line-height: 1.35;
+	line-height: 1.25;
 	color: var(--text-normal);
 	white-space: nowrap;
-}
-.htp-wx-top {
-	display: flex;
-	align-items: center;
-	gap: var(--size-2-1);
 }
 .htp-wx-icon {
 	display: inline-flex;
 	color: var(--text-muted);
 }
 .htp-wx-icon svg {
-	width: var(--icon-xs);
-	height: var(--icon-xs);
+	width: var(--icon-s);
+	height: var(--icon-s);
 }
-.htp-wx-bottom {
+.htp-wx-line {
+	display: flex;
+	align-items: center;
+	gap: 3px;
+}
+.htp-wx-mark {
+	display: inline-flex;
+}
+.htp-wx-mark svg {
+	width: 11px;
+	height: 11px;
+	stroke-width: 2.5;
+}
+.htp-wx-hi .htp-wx-mark {
+	color: var(--color-orange);
+}
+.htp-wx-lo,
+.htp-wx-rain {
 	color: var(--text-muted);
 }
-.htp-wx-rain {
-	margin-left: var(--size-2-2);
+.htp-wx-lo .htp-wx-mark,
+.htp-wx-rain .htp-wx-mark {
+	color: var(--color-blue);
 }
 
 /* ---------- Outfit card under each day (same look as the outfit strip) ---------- */
@@ -561,8 +577,8 @@
 		flex: 0 0 auto;
 		text-align: right;
 	}
-	.htp-planner .htp-wx-top {
-		justify-content: flex-end;
+	.htp-planner .htp-wx {
+		align-items: flex-end;
 	}
 	.htp-planner .htp-tab {
 		flex-direction: column;

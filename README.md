@@ -28,8 +28,8 @@ a standalone note later.
   with no outfit shows a dashed **+ pick**. Tapping a photo, name or icon opens that note. Nothing about outfits is
   written or changed.
 - **Weather.** Add a `Location` property to the Trip note — a city (`Reno, NV`) or coordinates (`39.53, -119.81`) — and
-  each day's first card shows that day's forecast beside its time: an icon, the high and low, and the chance of rain
-  when there is one. It comes from Open-Meteo (free, no account), is cached on each device for three hours, and is never
+  each day's first card shows that day's forecast beside its time, one line each: the sky icon, ↑ high, ↓ low, and a
+  raindrop with the chance of rain when there is one. It comes from Open-Meteo (free, no account), is cached on each device for three hours, and is never
   written to notes. Forecasts reach about 16 days ahead; Past keeps about three months.
 - **Quick add.** Name is the only required field. Categories are your own travel tags: food, sight, museum, outdoors,
   activity, tour, shopping and accomodations (hotels and flights), plus show, event and other place. The form changes with

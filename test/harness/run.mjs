@@ -19,7 +19,7 @@ const bundle = await esbuild.build({
 	entryPoints: [join(here, "entry.ts")], bundle: true, write: false, format: "iife", platform: "browser", target: "es2022",
 	alias: { obsidian: join(here, "obsidian.ts") }, logLevel: "warning",
 });
-const used = new Set([...readFileSync(join(root, "src/planner.ts"), "utf8").matchAll(/"([a-z0-9-]+)"/g), ...readFileSync(join(root, "src/model.ts"), "utf8").matchAll(/icon: "([a-z0-9-]+)"/g), ...readFileSync(join(root, "src/weather.ts"), "utf8").matchAll(/"([a-z0-9-]+)"/g)].map(m => m[1]));
+const used = new Set([...readFileSync(join(root, "src/planner.ts"), "utf8").matchAll(/"([a-z0-9-]+)"/g), ...readFileSync(join(root, "src/model.ts"), "utf8").matchAll(/icon: "([a-z0-9-]+)"/g), ...readFileSync(join(root, "src/weather.ts"), "utf8").matchAll(/"([a-z0-9-]+)"/g), ...["arrow-up", "arrow-down", "droplet"].map(n => [null, n])].map(m => m[1]));
 const iconMap = Object.fromEntries([...used].filter(n => icons[n]).map(n => [n, icons[n]]));
 const html = `<!doctype html><meta charset="utf-8"><style>${readFileSync(join(here, "theme.css"), "utf8")}\n${readFileSync(join(root, "styles.css"), "utf8")}</style>
 <body><div id="root"></div><script>window.ICONS=${JSON.stringify(iconMap)}</script><script>${bundle.outputFiles[0].text}</script>`;

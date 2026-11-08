@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.4.1
+
+- Weather reads top to bottom: the sky icon, ↑ high, ↓ low, and a raindrop with the chance of rain (left out when rain
+  is unlikely). On phones the same lines sit under the time.
+
 ## 0.4.0
 
 - **Outfit under each day.** After each day's plans, a card in the outfit strip's style: photo, more outfits as
