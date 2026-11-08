@@ -6,6 +6,8 @@ import { DATA_LANG, extract } from "./storage";
 import { ALL_TABS, parseTabs, TabId } from "./tabs";
 import { plannerBlockChanges } from "./template";
 import { TripVault } from "./vault";
+import { isOutfitNote, parseExtras } from "./outfits";
+import { WeatherService } from "./weather-service";
 
 export const VIEW_TYPE = "hybrid-travel-planner-view";
 export const BLOCK_LANG = "travel-planner";
@@ -13,12 +15,14 @@ export const BLOCK_LANG = "travel-planner";
 export default class TravelPlannerPlugin extends Plugin implements PlannerHost {
 	config!: PlannerSettings;
 	vault!: TripVault;
+	weather!: WeatherService;
 	readonly tabMemory = new Map<string, TabId>();
 	private readonly planners = new Set<Planner>();
 
 	async onload(): Promise<void> {
 		this.config = mergeSettings(await this.loadData());
 		this.vault = new TripVault(this.app, () => this.config);
+		this.weather = new WeatherService(this.app);
 
 		this.registerView(VIEW_TYPE, leaf => new PlannerView(leaf, this));
 		this.addSettingTab(new PlannerSettingTab(this.app, this));
@@ -86,6 +90,11 @@ export default class TravelPlannerPlugin extends Plugin implements PlannerHost {
 		});
 
 		const refresh = (file: TFile) => {
+			// An outfit picked for a day links that day's daily note, not the trip, so any outfit change redraws.
+			if (this.config.outfitsUnderDays && this.isOutfitFile(file)) {
+				this.refreshAll();
+				return;
+			}
 			for (const p of this.planners) {
 				if (p.trip.path === file.path || p.shown.has(file.path) || this.linksTo(file, p.trip)) p.refreshSoon();
 			}
@@ -114,6 +123,11 @@ export default class TravelPlannerPlugin extends Plugin implements PlannerHost {
 		if (day === this.lastDay) return;
 		this.lastDay = day;
 		for (const p of this.planners) p.refreshSoon();
+	}
+
+	private isOutfitFile(file: TFile): boolean {
+		const fm = this.app.metadataCache.getFileCache(file)?.frontmatter;
+		return isOutfitNote(fm, { outfitTag: this.config.outfitTag, datesProp: this.config.props.dates, typeProp: this.config.props.subType, extras: parseExtras(this.config.outfitExtras) });
 	}
 
 	private linksTo(file: TFile, trip: TFile): boolean {

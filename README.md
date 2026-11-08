@@ -15,12 +15,22 @@ a standalone note later.
 
 ## What it does
 
-- **Four tabs, in your existing order:** Confirmed · Ideas · Outfits · Past.
+- **Tabs:** Confirmed · Ideas · Past (plus Outfits when outfit cards are turned off).
   - **Confirmed:** activities dated today or later, grouped by day. Today's activities stay here all day, even after their time
     has passed. Only days with something planned are listed; each has a **+** button.
   - **Ideas:** activities with no date, grouped by category.
-  - **Outfits:** your existing `Embeds.base#TripOutfits` view, rendered unchanged. The plugin does not recreate any outfit logic.
   - **Past:** activities dated before today.
+  - **Outfits** (only with outfit cards off): your existing `Embeds.base#TripOutfits` view, rendered unchanged.
+- **Each day's outfit.** Under each day's plans, a card in the style of the outfit strip: the outfit's photo (its `Image`
+  property, or the first image in the note), any other outfits that day as "+ name", and small icons for make-up,
+  lockets, watch bands and manicures. Outfits and extras are found the way the strip finds them: notes tagged `outfit`
+  (or one of the extras' tags) whose `Dates` property links to that day's daily note (`[[2026-11-22]]`). A coming day
+  with no outfit shows a dashed **+ pick**. Tapping a photo, name or icon opens that note. Nothing about outfits is
+  written or changed.
+- **Weather.** Add a `Location` property to the Trip note — a city (`Reno, NV`) or coordinates (`39.53, -119.81`) — and
+  each day's first card shows that day's forecast beside its time: an icon, the high and low, and the chance of rain
+  when there is one. It comes from Open-Meteo (free, no account), is cached on each device for three hours, and is never
+  written to notes. Forecasts reach about 16 days ahead; Past keeps about three months.
 - **Quick add.** Name is the only required field. Categories are your own travel tags: food, sight, museum, outdoors,
   activity, tour, shopping and accomodations (hotels and flights), plus show, event and other place. The form changes with
   the category: menu, cuisine and reservation for food; hours, price and tickets for sights and museums; end time, tickets
@@ -170,10 +180,13 @@ planner stops writing and says so, instead of guessing. Avoid editing the same t
 | Trip tag / not a trip if tagged | `travel` / `event` |
 | Place tag / event tag | `place` / `event` |
 | Ignore notes tagged / ignore folders | `journal_entry` / `Templates` |
-| Property names | `Date`, `End_Date`, `Projects`, `Address`, `Geolink`, `Link`, `Notes`, `Image`, `Rating`, `Menu`, `Hours` |
+| Property names | `Date`, `End_Date`, `Projects`, `Address`, `Geolink`, `Link`, `Phone`, `Notes`, `Image`, `Rating`, `Menu`, `Hours`, `Location`, `Dates`, `Sub_Type` |
 | Maps | Google Maps |
 | Look up places online | on (only runs when you tap **Look up**) |
-| Outfits tab / embed | on / `![[Embeds.base#TripOutfits\|no-toolbar]]` |
+| Outfit under each day / outfit tag | on / `outfit` |
+| Outfit icons | make-up eyeshadow, eyeliner 🖌️, lipstick 💄, other make-up 🎨, locket 💎, watch band ⌚, manicure 💅 |
+| Weather / temperature | on / Fahrenheit |
+| Outfits tab / embed (outfit cards off) | on / `![[Embeds.base#TripOutfits\|no-toolbar]]` |
 | Folder / template for converted notes | next to the trip / none |
 
 ## Not yet implemented

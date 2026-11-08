@@ -33,7 +33,16 @@ const vault = {
 	change: async (_t: TFile, fn: (d: TravelData) => TravelData) => { data = fn(data); },
 	linkedNotes: () => legacy,
 	noteDetails: (p: string) => legacy.find(l => l.path === p) ?? null,
-	frontmatter: () => ({ Date: day(-1), End_Date: day(3), tags: ["travel"] }),
+	frontmatter: () => ({ Date: day(-1), End_Date: day(3), tags: ["travel"], Location: "Las Vegas, NV" }),
+	outfitNotes: () => [
+		{ path: "W/Travel day.md", name: "Travel day", fm: { tags: ["outfit"], Dates: [`[[${day(-1)}]]`] }, image: photo("#c9b8a6", "#8d7b6a") },
+		{ path: "W/Concert night.md", name: "Concert night", fm: { tags: ["outfit"], Dates: [`[[${day(0)}]]`] }, image: photo("#3b3b58", "#8e7cc3") },
+		{ path: "W/Pool day.md", name: "Pool day", fm: { tags: ["outfit"], Dates: [`[[${day(0)}]]`] } },
+		{ path: "W/Red lip.md", name: "Red lip", fm: { tags: ["make-up"], Sub_Type: "lipstick", Dates: [`[[${day(0)}]]`] } },
+		{ path: "W/Gold shadow.md", name: "Gold shadow", fm: { tags: ["make-up"], Sub_Type: "eyeshadow", Dates: [`[[${day(0)}]]`] } },
+		{ path: "W/Heart locket.md", name: "Heart locket", fm: { tags: ["locket"], Dates: [`[[${day(0)}]]`] } },
+		{ path: "W/Nails.md", name: "Chrome nails", fm: { tags: ["manicure"], Dates: [`[[${day(0)}]]`] } },
+	],
 	candidateNotes: () => [],
 	noteMatches: () => [
 		{ path: "Places/Sam's Town Mystic Falls Park.md", name: "Sam's Town Mystic Falls Park", kind: "place", category: "sight", folder: "Places" },
@@ -46,6 +55,11 @@ const host: PlannerHost = {
 	app: { workspace: { getLeaf: () => ({ openFile: async () => {} }) } } as unknown as PlannerHost["app"],
 	vault,
 	getSettings: () => DEFAULT_SETTINGS,
+	weather: {
+		cached: () => Object.fromEntries([[-1, 0, 74, 55, 0], [0, 1, 79, 58, 0], [1, 61, 66, 50, 70], [2, 3, 70, 52, 10], [3, 0, 75, 54, 0]]
+			.map(([o, code, hi, lo, rain]) => [day(o), { code, hi, lo, rain }])),
+		load: async () => null,
+	} as unknown as PlannerHost["weather"],
 	tabMemory: new Map(),
 };
 

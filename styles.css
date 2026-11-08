@@ -284,6 +284,118 @@
 	border-radius: var(--radius-s, 4px);
 }
 
+/* ---------- Weather beside the time ---------- */
+.htp-planner.htp-has-weather .htp-card .htp-when.htp-when--wx {
+	flex: 0 0 9.4em;
+	display: flex;
+	align-items: flex-start;
+	justify-content: space-between;
+	gap: var(--size-4-1);
+}
+.htp-wx-slot {
+	flex: 0 0 3.6em;
+	text-align: left;
+}
+.htp-when-time {
+	text-align: right;
+}
+.htp-wx {
+	font-size: var(--font-ui-smaller);
+	line-height: 1.35;
+	color: var(--text-normal);
+	white-space: nowrap;
+}
+.htp-wx-top {
+	display: flex;
+	align-items: center;
+	gap: var(--size-2-1);
+}
+.htp-wx-icon {
+	display: inline-flex;
+	color: var(--text-muted);
+}
+.htp-wx-icon svg {
+	width: var(--icon-xs);
+	height: var(--icon-xs);
+}
+.htp-wx-bottom {
+	color: var(--text-muted);
+}
+.htp-wx-rain {
+	margin-left: var(--size-2-2);
+}
+
+/* ---------- Outfit card under each day (same look as the outfit strip) ---------- */
+.htp-outfit {
+	display: flex;
+	flex-direction: column;
+	gap: 3px;
+	width: 120px;
+	box-sizing: border-box;
+	padding: 4px;
+	margin-bottom: var(--size-4-2);
+	border-radius: 10px;
+	border: 1px solid var(--background-modifier-border);
+	background: var(--background-secondary);
+	font-size: var(--font-ui-smaller);
+}
+.htp-planner .htp-outfit-photo {
+	height: 100px;
+	width: 100%;
+	padding: 0;
+	border-radius: 6px;
+	overflow: hidden;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	text-align: center;
+	background: var(--background-primary);
+	box-shadow: none;
+	cursor: pointer;
+}
+.htp-outfit-photo img {
+	width: 100%;
+	height: 100%;
+	object-fit: contain;
+}
+.htp-outfit-name {
+	padding: var(--size-4-1);
+	overflow-wrap: anywhere;
+}
+.htp-planner .htp-outfit-photo.is-empty {
+	border: 1px dashed var(--background-modifier-border);
+	background: none;
+	color: var(--text-faint);
+	cursor: default;
+}
+.htp-planner .htp-outfit-more {
+	display: block;
+	height: auto;
+	padding: 0;
+	background: none;
+	box-shadow: none;
+	color: var(--text-muted);
+	font-size: var(--font-ui-smaller);
+	text-align: left;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	cursor: pointer;
+}
+.htp-outfit-icons {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 2px;
+}
+.htp-planner .htp-outfit-extra {
+	height: auto;
+	padding: 0 1px;
+	background: none;
+	box-shadow: none;
+	font-size: var(--font-ui-small);
+	cursor: pointer;
+}
+
 /* ---------- Outfits, errors, data block ---------- */
 .htp-outfits-fallback {
 	margin-top: var(--size-4-3);
@@ -437,6 +549,21 @@
 
 /* ---------- Phone and narrow panes ---------- */
 @container (max-width: 480px) {
+	/* Weather goes under the time instead of beside it, to keep room for the card's text. */
+	.htp-planner.htp-has-weather .htp-card .htp-when.htp-when--wx {
+		flex: 0 0 4.6em;
+		flex-direction: column-reverse;
+		align-items: flex-end;
+		justify-content: flex-end;
+		gap: var(--size-2-2);
+	}
+	.htp-planner .htp-wx-slot {
+		flex: 0 0 auto;
+		text-align: right;
+	}
+	.htp-planner .htp-wx-top {
+		justify-content: flex-end;
+	}
 	.htp-planner .htp-tab {
 		flex-direction: column;
 		gap: 0;

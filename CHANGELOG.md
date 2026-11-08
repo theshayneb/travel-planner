@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.4.0
+
+- **Outfit under each day.** After each day's plans, a card in the outfit strip's style: photo, more outfits as
+  "+ name", and icons for make-up, lockets, watch bands and manicures, found through their `Dates` links to daily notes.
+  Coming days without an outfit show "+ pick". The separate Outfits tab is left out while this is on (setting).
+- **Weather.** With a `Location` property on the Trip note (a city or coordinates), each day's first card shows the
+  forecast beside its time: icon, high/low and chance of rain. From Open-Meteo, cached for three hours, never written
+  to notes. On phones it sits under the time. Fahrenheit or Celsius in settings.
+- Settings for the outfit tag, the icons (tag | type | icon lines), the `Location`, `Dates` and `Sub_Type` property
+  names, weather on/off and the temperature unit.
+
 ## 0.3.5
 
 - Removed the full-screen arrow button from planners in notes, and the **Add activity** button from the full-screen view.

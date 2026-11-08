@@ -14,6 +14,9 @@ const PROPERTY_LABELS: [keyof PropertyNames, string, string][] = [
 	["image", "Image", "Shown as the card thumbnail."],
 	["rating", "Rating", ""],
 	["menu", "Menu", "Written when an inline restaurant is converted to a note."],
+	["location", "Trip location", "On the trip note: a city (e.g. Reno, NV) or coordinates, for the weather."],
+	["dates", "Outfit dates", "On outfit, make-up and accessory notes: links to the daily notes they're for."],
+	["subType", "Make-up type", "On make-up notes: eyeshadow, eyeliner, lipstick and so on."],
 	["hours", "Opening hours", "Written when an inline place is converted to a note."],
 ];
 
@@ -68,6 +71,35 @@ export class PlannerSettingTab extends PluginSettingTab {
 			save();
 		}));
 		text("Outfits embed", "Rendered as if it sat in the trip note. Leave the default to keep your existing view.", () => s.outfitsEmbed, v => (s.outfitsEmbed = v));
+
+		new Setting(el).setName("Outfits and weather").setHeading();
+		new Setting(el).setName("Outfit under each day").setDesc("Show each day's outfit card under its plans, and leave out the separate outfits tab.").addToggle(t => t.setValue(s.outfitsUnderDays).onChange(v => {
+			s.outfitsUnderDays = v;
+			save();
+		}));
+		text("Outfit tag", "", () => s.outfitTag, v => (s.outfitTag = v || "outfit"));
+		new Setting(el)
+			.setName("Outfit icons")
+			.setDesc("Small icons under the outfit, one per line: tag | type | icon, or tag | icon. The first line that matches a note is used.")
+			.addTextArea(t => {
+				t.setValue(s.outfitExtras).onChange(v => {
+					s.outfitExtras = v;
+					save();
+				});
+				t.inputEl.rows = 7;
+			});
+		new Setting(el).setName("Weather").setDesc("Show each day's forecast beside its first time. Uses the trip's location and a free online forecast; nothing is written to notes.").addToggle(t => t.setValue(s.showWeather).onChange(v => {
+			s.showWeather = v;
+			save();
+		}));
+		new Setting(el).setName("Temperature").addDropdown(d => d
+			.addOption("fahrenheit", "Fahrenheit")
+			.addOption("celsius", "Celsius")
+			.setValue(s.weatherUnit)
+			.onChange(v => {
+				s.weatherUnit = v === "celsius" ? "celsius" : "fahrenheit";
+				save();
+			}));
 
 		new Setting(el).setName("Converting to notes").setHeading();
 		text("Folder for new notes", "Leave empty to create them next to the trip note.", () => s.newNoteFolder, v => (s.newNoteFolder = v), "Travel/Places");

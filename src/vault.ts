@@ -2,6 +2,7 @@
 import { App, normalizePath, TFile } from "obsidian";
 import { DisplayItem, TravelData, TravelItem } from "./model";
 import { Frontmatter, isTrip, itemFromNote, noteKind, splitList, firstLinkTarget } from "./notes";
+import { isOutfitNote, NoteInfo, OutfitConfig } from "./outfits";
 import { NoteMatch } from "./search";
 import { PlannerSettings } from "./settings-model";
 import { extract, renamePath, update } from "./storage";
@@ -31,6 +32,24 @@ export class TripVault {
 	candidateNotes(): TFile[] {
 		const s = this.settings();
 		return this.app.vault.getMarkdownFiles().filter(f => !this.excluded(f) && !this.isTrip(f) && noteKind(this.frontmatter(f), s) !== null);
+	}
+
+	/** Outfit, make-up, locket… notes (anything the outfit cards may show), with their picture. */
+	outfitNotes(cfg: OutfitConfig): NoteInfo[] {
+		const s = this.settings();
+		const out: NoteInfo[] = [];
+		for (const f of this.app.vault.getMarkdownFiles()) {
+			if (this.excluded(f)) continue;
+			const fm = this.frontmatter(f);
+			if (!fm || !isOutfitNote(fm, cfg)) continue;
+			out.push({ path: f.path, name: f.basename, fm, image: this.imageSrc(fm[s.props.image], f.path) ?? this.firstEmbeddedImage(f) });
+		}
+		return out;
+	}
+
+	private firstEmbeddedImage(file: TFile): string | undefined {
+		const embed = this.app.metadataCache.getFileCache(file)?.embeds?.find(e => /\.(png|jpe?g|gif|webp|avif|svg|bmp)$/i.test(e.link.split("|")[0]));
+		return embed ? this.imageSrc(embed.link, file.path) : undefined;
 	}
 
 	/** Place/Event notes as search entries for the add form. */

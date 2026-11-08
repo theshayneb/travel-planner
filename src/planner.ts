@@ -10,7 +10,10 @@ import { splitDateTime } from "./notes";
 import { PlannerSettings } from "./settings-model";
 import { addItem, removeItem, replaceItem } from "./storage";
 import { matchNotes, NoteMatch } from "./search";
+import { collectOutfits, DayOutfits, parseExtras } from "./outfits";
 import { TabId } from "./tabs";
+import { DayWeather, weatherIcon } from "./weather";
+import { WeatherService } from "./weather-service";
 import { TripVault } from "./vault";
 
 const TAB_LABELS: Record<TabId, string> = { confirmed: "Confirmed", ideas: "Ideas", outfits: "Outfits", past: "Past" };
@@ -20,6 +23,7 @@ export interface PlannerHost {
 	app: App;
 	vault: TripVault;
 	getSettings: () => PlannerSettings;
+	weather: WeatherService;
 	/** Remembers the open tab per Trip while Obsidian runs, so re-renders keep it. */
 	tabMemory: Map<string, TabId>;
 }
@@ -40,6 +44,10 @@ export class Planner extends Component {
 	private current: TabId | undefined;
 	/** The trip's days, for the add form. */
 	private days: string[] = [];
+	/** Outfits and extras by day, when outfit cards are on. */
+	private outfitsByDay = new Map<string, DayOutfits>();
+	/** Weather by day for the trip's Location, when known. */
+	private weatherByDay: Record<string, DayWeather> | null = null;
 	private listening = false;
 
 	constructor(
@@ -108,6 +116,15 @@ export class Planner extends Component {
 		this.shown.add(trip.path);
 		for (const i of items) if (i.path) this.shown.add(i.path);
 
+		this.outfitsByDay = new Map();
+		if (s.outfitsUnderDays) {
+			const cfg = { outfitTag: s.outfitTag, datesProp: s.props.dates, typeProp: s.props.subType, extras: parseExtras(s.outfitExtras) };
+			const dated = new Set(items.map(i => i.date).filter((d): d is string => !!d));
+			this.outfitsByDay = collectOutfits(vault.outfitNotes(cfg), dated, cfg);
+			for (const day of this.outfitsByDay.values()) for (const o of [...day.outfits, ...day.extras]) this.shown.add(o.path);
+		}
+		this.weatherByDay = this.weatherFor(fm[s.props.location]);
+
 		const el = this.el;
 		el.empty();
 		el.addClass("htp-planner");
@@ -118,6 +135,7 @@ export class Planner extends Component {
 			this.listening = true;
 		}
 		el.toggleClass("htp-planner--full", this.options.header);
+		el.toggleClass("htp-has-weather", !!this.weatherByDay);
 
 		if (this.options.header) this.drawHeader(el, tripStart, tripEnd);
 		if (error) {
@@ -126,7 +144,8 @@ export class Planner extends Component {
 			box.createSpan({ text: `${error} Fix or remove the travel-planner-data block in the trip note; the planner will not write until it is valid.` });
 		}
 
-		const tabs = this.options.tabs.filter(t => t !== "outfits" || s.showOutfitsTab);
+		// With outfit cards under each day, the separate Outfits tab is left out.
+		const tabs = this.options.tabs.filter(t => t !== "outfits" || (s.showOutfitsTab && !s.outfitsUnderDays));
 		// The tab this planner shows: the one last clicked in it; for a multi-tab block in a note, the one last clicked in
 		// that block (it is redrawn whenever the note re-renders); otherwise the first tab. The full-screen view always
 		// starts on Confirmed.
@@ -198,10 +217,70 @@ export class Planner extends Component {
 			const add = head.createEl("button", { cls: "clickable-icon htp-day-add", attr: { "aria-label": `Add to ${m.format("ddd, MMM D")}` } });
 			setIcon(add, "plus");
 			add.onClickEvent(() => this.add(g.date));
-			for (const item of g.timed) this.drawCard(day, item);
+			// The day's weather sits beside the time on its first card.
+			const weather = this.weatherByDay?.[g.date];
+			let first = true;
+			const draw = (item: DisplayItem) => {
+				this.drawCard(day, item, first ? weather : undefined);
+				first = false;
+			};
+			for (const item of g.timed) draw(item);
 			if (g.untimed.length) {
 				if (g.timed.length) day.createDiv({ cls: "htp-anytime", text: "Any time" });
-				for (const item of g.untimed) this.drawCard(day, item);
+				for (const item of g.untimed) draw(item);
+			}
+			if (this.host.getSettings().outfitsUnderDays) this.drawOutfitCard(day, g.date, g.date < today);
+		}
+	}
+
+	/** Cached weather, or start fetching it and redraw when it arrives. */
+	private weatherFor(location: unknown): Record<string, DayWeather> | null {
+		const s = this.host.getSettings();
+		const text: unknown = Array.isArray(location) ? location[0] : location;
+		if (!s.showWeather || typeof text !== "string" || !text.trim()) return null;
+		const cached = this.host.weather.cached(text, s.weatherUnit);
+		if (cached !== undefined) return cached;
+		void this.host.weather.load(text, s.weatherUnit).then(days => {
+			if (days) this.refreshSoon();
+		});
+		return null;
+	}
+
+	private drawWeather(parent: HTMLElement, w: DayWeather): void {
+		const { icon, label } = weatherIcon(w.code);
+		const rain = w.rain !== null && w.rain >= RAIN_MIN ? w.rain : null;
+		const box = parent.createDiv({ cls: "htp-wx", attr: { "aria-label": `${label}, high ${w.hi}°, low ${w.lo}°${rain !== null ? `, ${rain}% chance of rain` : ""}` } });
+		const top = box.createDiv({ cls: "htp-wx-top" });
+		setIcon(top.createSpan({ cls: "htp-wx-icon" }), icon);
+		top.createSpan({ text: `${w.hi}°` });
+		const bottom = box.createDiv({ cls: "htp-wx-bottom" });
+		bottom.createSpan({ text: `/${w.lo}°` });
+		if (rain !== null) bottom.createSpan({ cls: "htp-wx-rain", text: `${rain}%` });
+	}
+
+	/** The day's outfit card: photo, more outfits, small icons for make-up and accessories, or "+ pick". */
+	private drawOutfitCard(day: HTMLElement, date: string, past: boolean): void {
+		const data = this.outfitsByDay.get(date);
+		if (!data && past) return;
+		const card = day.createDiv({ cls: "htp-outfit" });
+		const [first, ...more] = data?.outfits ?? [];
+		if (first) {
+			const photo = card.createEl("button", { cls: "htp-outfit-photo", attr: { "aria-label": `Open ${first.name}` } });
+			if (first.image) photo.createEl("img", { attr: { src: first.image, alt: "", loading: "lazy" } });
+			else photo.createSpan({ cls: "htp-outfit-name", text: first.name });
+			photo.onClickEvent(() => this.openNote(first.path));
+		} else {
+			card.createDiv({ cls: "htp-outfit-photo is-empty", text: past ? "" : "+ pick" });
+		}
+		for (const o of more) {
+			const b = card.createEl("button", { cls: "htp-outfit-more", text: `+ ${o.name}` });
+			b.onClickEvent(() => this.openNote(o.path));
+		}
+		if (data?.extras.length) {
+			const icons = card.createDiv({ cls: "htp-outfit-icons" });
+			for (const x of data.extras) {
+				const b = icons.createEl("button", { cls: "htp-outfit-extra", text: x.icon ?? "•", attr: { "aria-label": x.name } });
+				b.onClickEvent(() => this.openNote(x.path));
 			}
 		}
 	}
@@ -229,12 +308,21 @@ export class Planner extends Component {
 		b.onClickEvent(() => void this.app.workspace.getLeaf(false).openFile(this.trip));
 	}
 
-	private drawCard(parent: HTMLElement, item: DisplayItem): void {
+	private drawCard(parent: HTMLElement, item: DisplayItem, weather?: DayWeather): void {
 		const cat = categoryOf(item.category, item.kind);
 		const card = parent.createDiv({ cls: `htp-card htp-family-${cat.family}` });
 		if (["event", "stay"].includes(cat.family)) card.addClass("htp-card--booking");
 
-		const when = card.createDiv({ cls: "htp-when" });
+		const column = card.createDiv({ cls: "htp-when" });
+		// Timed cards keep room for the weather so their times line up; only the day's first card fills it.
+		// Untimed cards without weather stay compact.
+		const withSlot = !!this.weatherByDay && (!!item.time || !!weather);
+		if (withSlot) {
+			column.addClass("htp-when--wx");
+			const slot = column.createDiv({ cls: "htp-wx-slot" });
+			if (weather) this.drawWeather(slot, weather);
+		}
+		const when = withSlot ? column.createDiv({ cls: "htp-when-time" }) : column;
 		if (item.time) {
 			when.createDiv({ cls: "htp-time", text: formatTime(item.time) });
 			if (item.endTime) when.createDiv({ cls: "htp-end", text: formatTime(item.endTime) });
@@ -414,6 +502,9 @@ export class Planner extends Component {
 		}
 	}
 }
+
+/** Rain chance worth showing, in %. */
+const RAIN_MIN = 5;
 
 function formatTime(hhmm: string): string {
 	return moment(hhmm, "HH:mm").format("h:mm A");
