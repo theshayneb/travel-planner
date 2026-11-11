@@ -120,6 +120,25 @@ working with the old embeds.
 **Open full-screen planner for this trip** (`hybrid-travel-planner:open-planner`) opens a larger view in its own tab.
 Like adding, it's a command, so it can sit on a Meta Bind button of your own. Each day's **+** adds to that day.
 
+### A trip's planner in any note
+
+A `travel-planner` block can show any trip, anywhere, for example on a dashboard or a daily note:
+
+````markdown
+```travel-planner
+trip: [[No Doubt in Las Vegas]]
+full
+```
+````
+
+- `trip:` a link or name of the Trip note, or `next` for the trip under way today, otherwise the next one to start.
+  Leave it out to use the note the block is in, as before.
+- `full` shows the full-screen layout: the trip's title and dates and an **Open trip note** button above the tabs.
+- A line of tabs (`confirmed, ideas, past`) still picks which tabs to show; leave it out for all of them.
+
+The **Add activity to this trip** and **Open full-screen planner** commands also work in a note with an embedded
+planner: they use that planner's trip.
+
 ### An Add activity button where you want it
 
 In Trip notes, adding is the command **Travel Planner: Add activity to this trip**

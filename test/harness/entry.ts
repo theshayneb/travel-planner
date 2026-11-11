@@ -69,7 +69,7 @@ const root = document.getElementById("root") as HTMLElement;
 const full = params.get("full") === "1";
 const tabs = (params.get("tabs")?.split(",") ?? ["confirmed", "ideas", "outfits", "past"]) as TabId[];
 host.tabMemory.set(`${trip.path}|${tabs.join(",")}`, tab);
-const planner = new Planner(host, root.createDiv({ cls: params.get("callout") ? "harness-callout" : "" }), trip, { tabs, header: full });
+const planner = new Planner(host, root.createDiv({ cls: params.get("callout") ? "harness-callout" : "" }), trip, { tabs, header: full || params.get("embedfull") === "1", padded: params.get("embedfull") === "1" ? false : undefined });
 planner.load();
 void planner.render().then(async () => {
 	if (params.get("modal")) planner.add(day(1));

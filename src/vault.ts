@@ -1,7 +1,8 @@
 /** Everything that touches the vault. Writes only ever go through `vault.process` on the Trip's data block. */
 import { App, normalizePath, TFile } from "obsidian";
+import { localDate, nextTrip } from "./itinerary";
 import { DisplayItem, TravelData, TravelItem } from "./model";
-import { Frontmatter, isTrip, itemFromNote, noteKind, splitList, firstLinkTarget } from "./notes";
+import { Frontmatter, isTrip, itemFromNote, noteKind, splitDateTime, splitList, firstLinkTarget } from "./notes";
 import { isOutfitNote, NoteInfo, OutfitConfig } from "./outfits";
 import { NoteMatch } from "./search";
 import { PlannerSettings } from "./settings-model";
@@ -20,6 +21,17 @@ export class TripVault {
 
 	trips(): TFile[] {
 		return this.app.vault.getMarkdownFiles().filter(f => this.isTrip(f));
+	}
+
+	/** The trip under way today, else the next one to start. */
+	nextTrip(): TFile | null {
+		const s = this.settings();
+		const trips = this.trips();
+		const path = nextTrip(trips.map(f => {
+			const fm = this.frontmatter(f) ?? {};
+			return { path: f.path, start: splitDateTime(fm[s.props.date]).date, end: splitDateTime(fm[s.props.endDate]).date };
+		}), localDate(new Date()));
+		return trips.find(f => f.path === path) ?? null;
 	}
 
 	private excluded(file: TFile): boolean {

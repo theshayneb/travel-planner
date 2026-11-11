@@ -3,7 +3,7 @@ import { Planner, PlannerHost } from "./planner";
 import { mergeSettings, PlannerSettings } from "./settings-model";
 import { PlannerSettingTab } from "./settings-tab";
 import { DATA_LANG, extract } from "./storage";
-import { ALL_TABS, parseTabs, TabId } from "./tabs";
+import { ALL_TABS, linkPath, parseBlock, TabId } from "./tabs";
 import { plannerBlockChanges } from "./template";
 import { TripVault } from "./vault";
 import { isOutfitNote, parseExtras } from "./outfits";
@@ -28,9 +28,19 @@ export default class TravelPlannerPlugin extends Plugin implements PlannerHost {
 		this.addSettingTab(new PlannerSettingTab(this.app, this));
 
 		this.registerMarkdownCodeBlockProcessor(BLOCK_LANG, (source, el, ctx) => {
-			const trip = this.app.vault.getFileByPath(ctx.sourcePath);
-			if (!trip) return;
-			ctx.addChild(new EmbeddedPlanner(el, this, trip, parseTabs(source)));
+			const options = parseBlock(source);
+			let trip: TFile | null;
+			if (!options.trip) trip = this.app.vault.getFileByPath(ctx.sourcePath);
+			else if (options.trip.toLowerCase() === "next") trip = this.vault.nextTrip();
+			else trip = this.app.metadataCache.getFirstLinkpathDest(linkPath(options.trip), ctx.sourcePath);
+			if (!trip) {
+				const text = options.trip?.toLowerCase() === "next"
+					? "No trip is under way or coming up."
+					: `Trip not found: ${options.trip ?? ctx.sourcePath}`;
+				el.createDiv({ cls: "htp-empty", text });
+				return;
+			}
+			ctx.addChild(new EmbeddedPlanner(el, this, trip, options.tabs, options.full));
 		});
 
 		// The data block itself shows as a one-line summary instead of raw JSON.
@@ -152,9 +162,14 @@ export default class TravelPlannerPlugin extends Plugin implements PlannerHost {
 		for (const p of this.planners) p.refreshSoon();
 	}
 
+	/** The trip note that's open, else the trip of a planner embedded in the open note (e.g. a dashboard). */
 	private activeTrip(): TFile | null {
-		const file = this.app.workspace.getActiveViewOfType(MarkdownView)?.file ?? this.app.workspace.getActiveViewOfType(PlannerView)?.trip ?? null;
-		return file && this.vault.isTrip(file) ? file : null;
+		const markdown = this.app.workspace.getActiveViewOfType(MarkdownView);
+		const file = markdown?.file ?? this.app.workspace.getActiveViewOfType(PlannerView)?.trip ?? null;
+		if (file && this.vault.isTrip(file)) return file;
+		if (!markdown) return null;
+		const embedded = [...this.planners].find(p => markdown.containerEl.contains(p.el));
+		return embedded?.trip ?? null;
 	}
 
 	private addActivity(trip: TFile): void {
@@ -185,9 +200,9 @@ export default class TravelPlannerPlugin extends Plugin implements PlannerHost {
 class EmbeddedPlanner extends MarkdownRenderChild {
 	private planner: Planner;
 
-	constructor(el: HTMLElement, private readonly plugin: TravelPlannerPlugin, trip: TFile, tabs: TabId[]) {
+	constructor(el: HTMLElement, private readonly plugin: TravelPlannerPlugin, trip: TFile, tabs: TabId[], full: boolean) {
 		super(el);
-		this.planner = new Planner(plugin, el.createDiv(), trip, { tabs, header: false });
+		this.planner = new Planner(plugin, el.createDiv(), trip, { tabs, header: full, padded: false });
 	}
 
 	onload(): void {

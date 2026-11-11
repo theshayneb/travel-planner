@@ -1,7 +1,7 @@
 {
   "id": "hybrid-travel-planner",
   "name": "Travel Planner",
-  "version": "0.4.2",
+  "version": "0.5.0",
   "minAppVersion": "1.10.0",
   "description": "Plan trips inside your existing trip notes: quick inline places and events, reuse of existing notes, and conversion to standalone notes.",
   "author": "theshayneb",

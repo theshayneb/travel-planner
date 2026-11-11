@@ -32,6 +32,8 @@ export interface PlannerOptions {
 	tabs: TabId[];
 	/** Full-screen view: show the Trip title, dates and the main actions. */
 	header: boolean;
+	/** The full-screen view's own padding and width limit (not for a planner embedded in a note). */
+	padded?: boolean;
 }
 
 export class Planner extends Component {
@@ -134,7 +136,8 @@ export class Planner extends Component {
 			this.registerDomEvent(el, "mousedown", e => e.stopPropagation());
 			this.listening = true;
 		}
-		el.toggleClass("htp-planner--full", this.options.header);
+		el.toggleClass("htp-planner--full", this.options.padded ?? this.options.header);
+		el.toggleClass("htp-planner--embedded-full", this.options.header && this.options.padded === false);
 		el.toggleClass("htp-has-weather", !!this.weatherByDay);
 
 		if (this.options.header) this.drawHeader(el, tripStart, tripEnd);

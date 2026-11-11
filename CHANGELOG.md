@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.5.0
+
+- Embed a trip's planner in any note. In a `travel-planner` block, `trip: [[Trip]]` picks the trip (`trip: next` follows
+  the trip under way or coming up next), and `full` shows the full-screen layout with the trip's title, dates and an
+  **Open trip note** button.
+- **Add activity to this trip** and **Open full-screen planner** work in notes with an embedded planner too, using that
+  planner's trip.
+
 ## 0.4.2
 
 - The day's outfit sits inside its first card, on the right next to the card's buttons, instead of in a separate card

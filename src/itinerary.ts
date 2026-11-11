@@ -114,3 +114,21 @@ export function tripDays(start: string | undefined, end: string | undefined, lim
 	}
 	return out;
 }
+
+export interface TripDates {
+	path: string;
+	start?: string;
+	end?: string;
+}
+
+/**
+ * The trip happening now (earliest start among those under way), else the next one to start; null when every trip is
+ * over or undated.
+ */
+export function nextTrip(trips: TripDates[], today: string): string | null {
+	const dated = trips.filter((t): t is TripDates & { start: string } => !!t.start);
+	const current = dated.filter(t => t.start <= today && (t.end ?? t.start) >= today);
+	const upcoming = dated.filter(t => t.start > today);
+	const pick = (list: (TripDates & { start: string })[]) => list.sort((a, b) => a.start.localeCompare(b.start))[0]?.path ?? null;
+	return pick(current) ?? pick(upcoming);
+}

@@ -28,6 +28,13 @@
 	margin-top: var(--size-2-1);
 }
 
+.htp-planner--embedded-full .htp-header {
+	margin-bottom: var(--size-4-3);
+}
+.htp-planner--embedded-full .htp-header h2 {
+	font-size: var(--font-ui-large);
+}
+
 /* ---------- Tabs ---------- */
 .htp-tabs {
 	display: flex;
