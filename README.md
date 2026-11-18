@@ -189,6 +189,11 @@ database. Settings are in the plugin's `data.json`, which Vault configuration sy
 APIs (`isDesktopOnly: false`). The planner redraws when a synced change arrives, and moves today's activities to Past at
 midnight.
 
+Changing a setting saves only that setting on top of the latest `data.json`, and settings that arrive through Sync are
+reloaded, so a device with an old copy doesn't overwrite newer settings it didn't touch. When a note used in a trip is
+renamed, each device waits a few seconds for Sync, re-reads the trip from disk and only updates it if no other device
+already has.
+
 Obsidian Sync merges Markdown edits made on two devices before they sync. If that ever produces a damaged data block, the
 planner stops writing and says so, instead of guessing. Avoid editing the same trip on two offline devices at once.
 

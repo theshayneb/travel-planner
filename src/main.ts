@@ -1,6 +1,6 @@
 import { Editor, ItemView, MarkdownRenderChild, MarkdownView, Notice, Plugin, TFile, ViewStateResult, WorkspaceLeaf } from "obsidian";
 import { Planner, PlannerHost } from "./planner";
-import { mergeSettings, PlannerSettings } from "./settings-model";
+import { mergeSettings, patchSettings, PlannerSettings, SettingsPatch } from "./settings-model";
 import { PlannerSettingTab } from "./settings-tab";
 import { DATA_LANG, extract } from "./storage";
 import { ALL_TABS, linkPath, parseBlock, TabId } from "./tabs";
@@ -18,6 +18,8 @@ export default class TravelPlannerPlugin extends Plugin implements PlannerHost {
 	weather!: WeatherService;
 	readonly tabMemory = new Map<string, TabId>();
 	private readonly planners = new Set<Planner>();
+	/** Saves run one after another, each on top of the previous one. */
+	private saving: Promise<void> = Promise.resolve();
 
 	async onload(): Promise<void> {
 		this.config = mergeSettings(await this.loadData());
@@ -191,8 +193,26 @@ export default class TravelPlannerPlugin extends Plugin implements PlannerHost {
 		})();
 	}
 
-	async saveSettings(): Promise<void> {
-		await this.saveData(this.config);
+	/**
+	 * Saves one change on top of the data.json on disk (which Sync may have updated from another device), so settings
+	 * this device didn't touch are never written back from a stale in-memory copy.
+	 */
+	saveSettings(patch: SettingsPatch): Promise<void> {
+		this.saving = this.saving.then(async () => {
+			const next = patchSettings(await this.loadData(), patch);
+			await this.saveData(next);
+			this.config = mergeSettings(next);
+			this.refreshAll();
+		}).catch((e: unknown) => {
+			new Notice(`Travel planner could not save settings: ${e instanceof Error ? e.message : String(e)}`, 8000);
+		});
+		return this.saving;
+	}
+
+	/** Obsidian calls this when data.json changes on disk, e.g. when Sync brings another device's settings. */
+	async onExternalSettingsChange(): Promise<void> {
+		// An open settings page keeps showing what it showed; editing a field there still saves only that field.
+		this.config = mergeSettings(await this.loadData());
 		this.refreshAll();
 	}
 }

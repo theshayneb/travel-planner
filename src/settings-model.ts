@@ -92,3 +92,22 @@ export function mergeSettings(saved: unknown): PlannerSettings {
 	const s = (typeof saved === "object" && saved !== null ? saved : {}) as Partial<PlannerSettings>;
 	return { ...DEFAULT_SETTINGS, ...s, props: { ...DEFAULT_SETTINGS.props, ...(s.props ?? {}) } };
 }
+
+/** A change to some settings; property names can be changed one at a time. */
+export type SettingsPatch = Partial<Omit<PlannerSettings, "props">> & { props?: Partial<PropertyNames> };
+
+/**
+ * The data.json to save after a change: the copy on disk now (which Obsidian Sync may have updated from another
+ * device) with only the changed settings replaced. Settings this device didn't change are never written from memory,
+ * so a phone or tablet with an old copy doesn't send stale values back.
+ */
+export function patchSettings(onDisk: unknown, patch: SettingsPatch): Record<string, unknown> {
+	const disk = typeof onDisk === "object" && onDisk !== null && !Array.isArray(onDisk) ? (onDisk as Record<string, unknown>) : {};
+	const { props, ...rest } = patch;
+	const next: Record<string, unknown> = { ...disk, ...rest };
+	if (props) {
+		const diskProps = typeof disk.props === "object" && disk.props !== null ? (disk.props as Record<string, unknown>) : {};
+		next.props = { ...diskProps, ...props };
+	}
+	return next;
+}

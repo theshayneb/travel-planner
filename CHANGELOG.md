@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.5.1
+
+Safer with Obsidian Sync across devices that sync at different times.
+
+- Settings: changing a setting saves only that setting, on top of the `data.json` currently on disk, instead of the
+  whole copy loaded at startup. A phone or tablet with an old copy no longer sends stale values for settings it didn't
+  touch (including other property names). When Sync brings new settings, the plugin reloads them
+  (`onExternalSettingsChange`).
+- Renamed notes: when a note used by a visit is renamed or moved, each device waits a few seconds for Sync to deliver
+  the trip notes, re-reads them from disk and only updates a trip that still refers to the old path. A trip another
+  device already updated is left untouched, and a note deleted meanwhile is skipped.
+
 ## 0.5.0
 
 - Embed a trip's planner in any note. In a `travel-planner` block, `trip: [[Trip]]` picks the trip (`trip: next` follows

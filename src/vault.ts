@@ -9,7 +9,12 @@ import { PlannerSettings } from "./settings-model";
 import { extract, renamePath, update } from "./storage";
 
 export class TripVault {
-	constructor(private readonly app: App, private readonly settings: () => PlannerSettings) {}
+	constructor(
+		private readonly app: App,
+		private readonly settings: () => PlannerSettings,
+		/** How long to let Obsidian Sync deliver other changes before acting on a rename. */
+		private readonly settleMs = 5000,
+	) {}
 
 	frontmatter(file: TFile): Frontmatter | undefined {
 		return this.app.metadataCache.getFileCache(file)?.frontmatter;
@@ -128,12 +133,20 @@ export class TripVault {
 		await this.app.vault.process(trip, source => update(source, fn));
 	}
 
-	/** Keeps visits pointing at a note after it is renamed or moved. */
+	/**
+	 * Keeps visits pointing at a note after it is renamed or moved. Every device that sees the rename runs this
+	 * (including when Sync brings a rename made elsewhere), so it waits for Sync to deliver the trip notes too, then
+	 * re-reads each one from disk and writes only if it still refers to the old path. A trip another device already
+	 * updated is left alone, so devices don't make the same edit twice.
+	 */
 	async onRename(file: TFile, oldPath: string): Promise<void> {
 		if (file.extension !== "md") return;
+		if (this.settleMs > 0) await new Promise<void>(resolve => window.setTimeout(resolve, this.settleMs));
+		// Deleted while waiting: nothing to point visits at.
+		if (!this.app.vault.getFileByPath(file.path)) return;
 		const needle = JSON.stringify(oldPath);
 		for (const trip of this.trips()) {
-			const text = await this.app.vault.cachedRead(trip);
+			const text = await this.app.vault.read(trip);
 			if (!text.includes(needle)) continue;
 			await this.app.vault.process(trip, source => {
 				let next: TravelData | null = null;
