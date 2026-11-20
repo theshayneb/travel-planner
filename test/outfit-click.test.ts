@@ -8,10 +8,11 @@ import { TravelData } from "../src/model";
 import { TripVault } from "../src/vault";
 
 const today = localDate(new Date());
+const file = (path: string): TFile => Object.assign(new TFile(), { path, basename: path.replace(/^.*\//, "").replace(/\.md$/, "") });
 
 /** A planner showing one trip day with an activity, two outfits and a lipstick, like a real Trip note. */
 async function renderPlanner(opened: string[]) {
-	const trip = new TFile("Trips/Vegas.md");
+	const trip = file("Trips/Vegas.md");
 	const data: TravelData = { version: 1, items: [{ id: "a", source: "inline", kind: "place", category: "food", name: "Lotus of Siam", date: today, time: "18:00" }] };
 	const files = new Map<string, TFile>();
 	const vault = {
@@ -27,7 +28,7 @@ async function renderPlanner(opened: string[]) {
 	} as unknown as TripVault;
 	const host: PlannerHost = {
 		app: {
-			vault: { getFileByPath: (p: string) => files.get(p) ?? (files.set(p, new TFile(p)), files.get(p)) },
+			vault: { getFileByPath: (p: string) => files.get(p) ?? (files.set(p, file(p)), files.get(p)) },
 			workspace: { getLeaf: () => ({ openFile: async (f: TFile) => void opened.push(f.path) }) },
 		} as unknown as PlannerHost["app"],
 		vault,
