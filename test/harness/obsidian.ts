@@ -56,7 +56,7 @@ export const MarkdownRenderer = {
 	},
 };
 export function setIcon(el: HTMLElement, name: string): void {
-	const svg = (window as unknown as { ICONS: Record<string, string> }).ICONS[name];
+	const svg = (window as unknown as { ICONS?: Record<string, string> }).ICONS?.[name];
 	el.innerHTML = svg ?? `<b title="missing icon ${name}">?</b>`;
 }
 export async function requestUrl(_o: { url: string }): Promise<{ json: unknown }> {

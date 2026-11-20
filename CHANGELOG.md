@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.5.2
+
+- Tapping an outfit's photo in the itinerary opens the outfit's note again. Image viewers (core or plugins) were
+  catching the tap and showing the picture instead; the photo now hands taps to the plugin.
+- The outfit's name shows under its photo as a link to its note (without a trailing date in parentheses). The
+  "+ name" links and accessory icons open their notes the same way.
+
 ## 0.5.1
 
 Safer with Obsidian Sync across devices that sync at different times.

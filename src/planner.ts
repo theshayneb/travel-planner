@@ -6,7 +6,7 @@ import { mapsUrl } from "./maps";
 import { categoryOf, DisplayItem, newId, TravelData, TravelItem } from "./model";
 import { ActivityModal } from "./modals/activity";
 import { confirm } from "./modals/confirm";
-import { splitDateTime } from "./notes";
+import { displayName, splitDateTime } from "./notes";
 import { PlannerSettings } from "./settings-model";
 import { addItem, removeItem, replaceItem } from "./storage";
 import { matchNotes, NoteMatch } from "./search";
@@ -273,23 +273,32 @@ export class Planner extends Component {
 		parent.addClass("has-outfit");
 		const card = parent.createDiv({ cls: "htp-outfit" });
 		const [first, ...more] = data?.outfits ?? [];
+		// Clicks open the outfit's note. The plugin keeps them to itself so image viewers and other click handlers
+		// don't treat a tap on the photo as "show this picture".
+		const opener = (el: HTMLElement, path: string) => {
+			el.onClickEvent(e => {
+				e.preventDefault();
+				e.stopPropagation();
+				this.openNote(path);
+			});
+		};
 		if (first) {
-			const photo = card.createEl("button", { cls: "htp-outfit-photo", attr: { "aria-label": `Open ${first.name}` } });
-			if (first.image) photo.createEl("img", { attr: { src: first.image, alt: "", loading: "lazy" } });
-			else photo.createSpan({ cls: "htp-outfit-name", text: first.name });
-			photo.onClickEvent(() => this.openNote(first.path));
+			const name = displayName(first.name);
+			const photo = card.createEl("button", { cls: "htp-outfit-photo", attr: { "aria-label": `Open ${name}` } });
+			if (first.image) photo.createEl("img", { attr: { src: first.image, alt: "", loading: "lazy", draggable: "false" } });
+			else photo.createSpan({ cls: "htp-outfit-name", text: name });
+			opener(photo, first.path);
+			if (first.image) opener(card.createEl("button", { cls: "htp-outfit-title", text: name, attr: { "aria-label": `Open ${name}` } }), first.path);
 		} else {
 			card.createDiv({ cls: "htp-outfit-photo is-empty", text: past ? "" : "+ pick" });
 		}
 		for (const o of more) {
-			const b = card.createEl("button", { cls: "htp-outfit-more", text: `+ ${o.name}` });
-			b.onClickEvent(() => this.openNote(o.path));
+			opener(card.createEl("button", { cls: "htp-outfit-more", text: `+ ${displayName(o.name)}` }), o.path);
 		}
 		if (data?.extras.length) {
 			const icons = card.createDiv({ cls: "htp-outfit-icons" });
 			for (const x of data.extras) {
-				const b = icons.createEl("button", { cls: "htp-outfit-extra", text: x.icon ?? "•", attr: { "aria-label": x.name } });
-				b.onClickEvent(() => this.openNote(x.path));
+				opener(icons.createEl("button", { cls: "htp-outfit-extra", text: x.icon ?? "•", attr: { "aria-label": displayName(x.name) } }), x.path);
 			}
 		}
 	}

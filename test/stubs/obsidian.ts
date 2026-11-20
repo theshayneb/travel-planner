@@ -1,8 +1,3 @@
-// The few runtime values of the "obsidian" module that unit-tested code imports. Types come from the real package.
-export function normalizePath(path: string): string {
-	return path.replace(/\\/g, "/").replace(/\/+/g, "/").replace(/^\/|\/$/g, "");
-}
-export class TFile {}
-export async function requestUrl(): Promise<never> {
-	throw new Error("No network in unit tests.");
-}
+// The "obsidian" module for unit tests: the same stand-in the screenshot harness uses (DOM helpers, Component,
+// Modal, Setting, setIcon…). Tests that import it need the jsdom environment. Types come from the real package.
+export * from "../harness/obsidian";
