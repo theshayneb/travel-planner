@@ -33,7 +33,7 @@ P.setAttr = function (this: HTMLElement, k: string, v: string) { this.setAttribu
 P.onClickEvent = function (this: HTMLElement, fn: (e: MouseEvent) => void) { this.addEventListener("click", fn); };
 
 export const moment = realMoment;
-export class TFile { constructor(public path: string, public basename = path.replace(/^.*\//, "").replace(/\.md$/, "")) {} }
+export class TFile { constructor(public path = "", public basename = path.replace(/^.*\//, "").replace(/\.md$/, "")) {} }
 export class Notice { constructor(msg: string) { console.log("Notice:", msg); } }
 export class Component {
 	private children: Component[] = [];
